@@ -1,0 +1,2408 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI 초급자 강의자료</title>
+  <style>
+    :root {
+      --slide-pad-x: 76px;
+      --slide-pad-y: 48px;
+      --slide-pad-bottom: 44px;
+      --header-gap: 48px;
+      --content-gap: 24px;
+      --card-pad: 28px;
+      --card-pad-lg: 32px;
+      --radius-card: 14px;
+      --color-primary: #008b84;
+      --color-text: #17201f;
+      --color-muted: #667371;
+      --color-border: #d8e4e1;
+      --color-surface: #ffffff;
+      --color-soft: #e7f6f3;
+      --bg: #eef7f5;
+      --paper: var(--color-surface);
+      --ink: var(--color-text);
+      --muted: var(--color-muted);
+      --line: var(--color-border);
+      --teal: var(--color-primary);
+      --teal-dark: #00645f;
+      --mint: var(--color-soft);
+      --mint-strong: #cfece7;
+      --coral: #c95f4b;
+      --amber: #b98517;
+      --blue: #3b6798;
+      --green: #2f8057;
+      --soft-coral: #fff1ec;
+      --soft-amber: #fff7df;
+      --soft-blue: #eef5ff;
+      --shadow: 0 16px 42px rgba(20, 44, 41, 0.10);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: "Pretendard", "Noto Sans KR", "Malgun Gothic", Arial, sans-serif;
+    }
+
+    body {
+      overflow: hidden;
+    }
+
+    .deck {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 0;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(238, 247, 245, 0.84)),
+        var(--bg);
+    }
+
+    .slide {
+      display: none;
+      width: min(1280px, 100vw);
+      aspect-ratio: 16 / 9;
+      max-height: 100vh;
+      background:
+        linear-gradient(90deg, rgba(0, 139, 132, 0.045), transparent 36%),
+        var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+      padding: 72px 76px 48px;
+    }
+
+    .slide.active {
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr) auto;
+      gap: 22px;
+    }
+
+    .slide::before {
+      content: attr(data-kicker);
+      position: absolute;
+      top: 26px;
+      left: 76px;
+      color: var(--teal);
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: 0;
+      background: var(--mint);
+      border: 1px solid var(--mint-strong);
+      border-radius: 999px;
+      padding: 7px 12px 6px;
+    }
+
+    .slide::after {
+      content: none;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin: 0;
+    }
+
+    h1 {
+      font-size: clamp(46px, 6vh, 72px);
+      line-height: 1.08;
+      letter-spacing: 0;
+      max-width: 900px;
+    }
+
+    h2 {
+      font-size: clamp(34px, 4.4vh, 52px);
+      line-height: 1.15;
+      letter-spacing: 0;
+      max-width: 960px;
+    }
+
+    h3 {
+      font-size: clamp(21px, 2.2vh, 27px);
+      line-height: 1.3;
+      letter-spacing: 0;
+    }
+
+    p,
+    li {
+      font-size: clamp(19px, 2.05vh, 25px);
+      line-height: 1.48;
+    }
+
+    ul,
+    ol {
+      margin: 0;
+      padding-left: 1.2em;
+    }
+
+    li + li {
+      margin-top: 10px;
+    }
+
+    code,
+    pre {
+      font-family: "D2Coding", Consolas, "Courier New", monospace;
+    }
+
+    pre {
+      margin: 0;
+      white-space: pre-wrap;
+      word-break: keep-all;
+      background: #13211f;
+      color: #f6fbfa;
+      border-radius: 8px;
+      padding: 18px 20px;
+      font-size: clamp(15px, 1.62vh, 19px);
+      line-height: 1.5;
+      border-left: 6px solid var(--teal);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.07);
+    }
+
+    .hero {
+      background:
+        linear-gradient(115deg, rgba(0, 139, 132, 0.13), transparent 48%),
+        linear-gradient(180deg, rgba(255, 247, 223, 0.8), transparent 54%),
+        var(--paper);
+      align-content: center;
+    }
+
+    .hero .body {
+      display: grid;
+      align-content: center;
+      gap: 28px;
+    }
+
+    .hero .subtitle {
+      max-width: 760px;
+      color: var(--muted);
+      font-size: clamp(22px, 2.5vh, 31px);
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 36px;
+      border-radius: 999px;
+      border: 1px solid var(--mint-strong);
+      padding: 6px 14px;
+      color: var(--teal-dark);
+      background: rgba(255, 255, 255, 0.76);
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    .body {
+      min-height: 0;
+      z-index: 1;
+      align-self: center;
+      display: grid;
+      gap: 16px;
+    }
+
+    .lead {
+      color: var(--muted);
+      font-size: clamp(23px, 2.5vh, 32px);
+      max-width: 920px;
+    }
+
+    .quote {
+      border-left: 8px solid var(--teal);
+      padding: 18px 0 20px 30px;
+      font-size: clamp(31px, 4vh, 48px);
+      line-height: 1.25;
+      font-weight: 850;
+      max-width: 980px;
+      background: linear-gradient(90deg, rgba(0, 139, 132, 0.08), transparent 62%);
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 24px;
+      align-items: stretch;
+    }
+
+    .three-col {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 22px;
+      background: rgba(255, 255, 255, 0.92);
+      box-shadow: 0 8px 22px rgba(23, 32, 31, 0.045);
+    }
+
+    .panel.teal {
+      border-top: 6px solid var(--teal);
+      background: linear-gradient(180deg, var(--mint), #ffffff 42%);
+    }
+
+    .panel.coral {
+      border-top: 6px solid var(--coral);
+      background: linear-gradient(180deg, var(--soft-coral), #ffffff 42%);
+    }
+
+    .panel.amber {
+      border-top: 6px solid var(--amber);
+      background: linear-gradient(180deg, var(--soft-amber), #ffffff 42%);
+    }
+
+    .panel.blue {
+      border-top: 6px solid var(--blue);
+      background: linear-gradient(180deg, var(--soft-blue), #ffffff 42%);
+    }
+
+    .panel.green {
+      border-top: 6px solid var(--green);
+      background: linear-gradient(180deg, #eef9f3, #ffffff 42%);
+    }
+
+    .panel p,
+    .panel li {
+      font-size: clamp(17px, 1.85vh, 22px);
+    }
+
+    .panel h3 + p,
+    .panel h3 + ul,
+    .panel h3 + ol {
+      margin-top: 14px;
+    }
+
+    .mini {
+      color: var(--muted);
+      font-size: clamp(16px, 1.72vh, 20px);
+    }
+
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .step {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 22px 20px 20px;
+      background: rgba(255, 255, 255, 0.94);
+      min-height: 146px;
+      position: relative;
+      box-shadow: 0 8px 22px rgba(23, 32, 31, 0.045);
+    }
+
+    .flow .step:not(:last-child)::after {
+      content: "→";
+      position: absolute;
+      right: -17px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--teal);
+      font-size: 23px;
+      font-weight: 900;
+      z-index: 2;
+    }
+
+    .step strong {
+      display: block;
+      font-size: clamp(22px, 2.45vh, 30px);
+      line-height: 1.2;
+      margin: 0 0 12px;
+      padding-right: 0;
+    }
+
+    .step span {
+      color: var(--muted);
+      font-size: clamp(16px, 1.72vh, 20px);
+      line-height: 1.45;
+    }
+
+    .step .num {
+      position: static;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      margin-bottom: 14px;
+      color: #ffffff;
+      background: var(--teal);
+      border-radius: 999px;
+      font-size: 15px;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .compare {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 20px;
+    }
+
+    .bad {
+      border-top: 6px solid #9aa3ad;
+      background: linear-gradient(180deg, #f4f6f7, #ffffff 42%);
+    }
+
+    .good {
+      border-top: 6px solid var(--green);
+      background: linear-gradient(180deg, #eef9f3, #ffffff 42%);
+    }
+
+    .checklist {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px 22px;
+      padding: 0;
+      list-style: none;
+    }
+
+    .checklist li {
+      border: 1px solid var(--line);
+      border-left: 6px solid var(--teal);
+      padding: 13px 16px;
+      background: rgba(255, 255, 255, 0.92);
+      border-radius: 8px;
+      font-size: clamp(17px, 1.85vh, 22px);
+      box-shadow: 0 6px 18px rgba(23, 32, 31, 0.035);
+    }
+
+    .timeline {
+      display: grid;
+      gap: 12px;
+      padding: 0;
+      list-style: none;
+    }
+
+    .timeline li {
+      display: grid;
+      grid-template-columns: 150px 1fr;
+      gap: 18px;
+      align-items: start;
+      padding: 13px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .timeline strong {
+      color: var(--teal);
+      font-size: clamp(18px, 2vh, 24px);
+    }
+
+    .timeline span {
+      font-size: clamp(17px, 1.85vh, 22px);
+      line-height: 1.45;
+    }
+
+    .callout {
+      background: var(--mint);
+      border: 1px solid var(--mint-strong);
+      border-left: 7px solid var(--teal);
+      border-radius: 8px;
+      padding: 20px 22px;
+      margin-top: 16px;
+    }
+
+    .callout p,
+    .callout li {
+      font-size: clamp(18px, 1.95vh, 23px);
+    }
+
+    .footer {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 16px;
+      color: var(--muted);
+      font-size: 15px;
+      z-index: 1;
+    }
+
+    .footer span:first-child {
+      display: none;
+    }
+
+    .footer span:last-child {
+      padding-top: 10px;
+      border-top: 1px solid var(--line);
+      max-width: 720px;
+      text-align: right;
+    }
+
+    .slide {
+      padding: var(--slide-pad-y) var(--slide-pad-x) var(--slide-pad-bottom);
+      background:
+        linear-gradient(90deg, rgba(0, 139, 132, 0.04), transparent 34%),
+        var(--paper);
+    }
+
+    .slide.active {
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr) auto;
+      gap: 0;
+    }
+
+    .slide::before {
+      content: none;
+      display: none;
+    }
+
+    .slide-header {
+      display: grid;
+      gap: 18px;
+      max-width: 980px;
+      z-index: 1;
+    }
+
+    .eyebrow {
+      justify-self: start;
+      color: var(--teal);
+      font-size: 14px;
+      font-weight: 850;
+      line-height: 1;
+      letter-spacing: 0;
+      background: var(--mint);
+      border: 1px solid var(--mint-strong);
+      border-radius: 999px;
+      padding: 8px 13px;
+    }
+
+    .slide-title {
+      color: var(--ink);
+      letter-spacing: 0;
+      max-width: 980px;
+    }
+
+    h1.slide-title {
+      font-size: clamp(46px, 5.8vh, 68px);
+      line-height: 1.08;
+    }
+
+    h2.slide-title {
+      font-size: clamp(32px, 4.2vh, 48px);
+      line-height: 1.16;
+    }
+
+    .slide-subtitle {
+      max-width: 840px;
+      color: var(--muted);
+      font-size: clamp(21px, 2.35vh, 29px);
+      line-height: 1.44;
+    }
+
+    .slide-content {
+      min-height: 0;
+      z-index: 1;
+      align-self: start;
+      display: grid;
+      gap: var(--content-gap);
+      margin-top: var(--header-gap);
+    }
+
+    .hero {
+      background:
+        linear-gradient(115deg, rgba(0, 139, 132, 0.11), transparent 48%),
+        linear-gradient(180deg, rgba(255, 247, 223, 0.72), transparent 54%),
+        var(--paper);
+    }
+
+    .hero .slide-header {
+      max-width: 930px;
+      gap: 20px;
+    }
+
+    .hero .slide-content {
+      margin-top: 44px;
+    }
+
+    .lead {
+      color: var(--muted);
+      font-size: clamp(21px, 2.35vh, 29px);
+      max-width: 840px;
+    }
+
+    pre {
+      border-radius: 10px;
+      padding: 22px 24px;
+      font-size: clamp(16px, 1.72vh, 20px);
+      line-height: 1.58;
+    }
+
+    .slide-content > pre:only-child {
+      padding: 18px 22px;
+      font-size: clamp(14px, 1.55vh, 18px);
+      line-height: 1.45;
+    }
+
+    .two-col {
+      gap: var(--content-gap);
+    }
+
+    .three-col {
+      gap: 22px;
+    }
+
+    .panel {
+      border-radius: var(--radius-card);
+      padding: var(--card-pad) 30px;
+      min-height: 0;
+      box-shadow: 0 8px 22px rgba(23, 32, 31, 0.04);
+    }
+
+    .panel.teal,
+    .panel.coral,
+    .panel.amber,
+    .panel.blue,
+    .panel.green,
+    .bad,
+    .good {
+      border-top-width: 6px;
+    }
+
+    .panel p,
+    .panel li {
+      font-size: clamp(17px, 1.82vh, 21px);
+      line-height: 1.5;
+    }
+
+    .panel > * + * {
+      margin-top: 16px;
+    }
+
+    .panel h3 + p,
+    .panel h3 + ul,
+    .panel h3 + ol,
+    .panel h3 + pre {
+      margin-top: 16px;
+    }
+
+    .flow,
+    .flow-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 24px;
+      align-items: stretch;
+    }
+
+    .step {
+      border-radius: var(--radius-card);
+      padding: 26px;
+      min-height: 180px;
+      display: grid;
+      align-content: start;
+    }
+
+    .flow .step:not(:last-child)::after,
+    .flow-grid .step:not(:last-child)::after {
+      right: -22px;
+      font-size: 24px;
+    }
+
+    .step strong {
+      font-size: clamp(20px, 2.15vh, 26px);
+      margin: 0 0 14px;
+    }
+
+    .step span {
+      font-size: clamp(16px, 1.7vh, 20px);
+    }
+
+    .step .num {
+      width: 30px;
+      height: 30px;
+      margin-bottom: 16px;
+      font-size: 14px;
+    }
+
+    .compare,
+    .compare-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: var(--content-gap);
+      align-items: stretch;
+    }
+
+    .compare .panel,
+    .compare-grid .panel {
+      display: grid;
+      align-content: start;
+      padding: 30px var(--card-pad-lg);
+      min-height: 258px;
+    }
+
+    .compare .panel h3 + pre,
+    .compare-grid .panel h3 + pre {
+      margin-top: 18px;
+    }
+
+    .checklist,
+    .check-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px 24px;
+      padding: 0;
+      list-style: none;
+    }
+
+    .checklist li,
+    .check-grid li {
+      position: relative;
+      display: flex;
+      align-items: center;
+      min-height: 74px;
+      border-left-width: 6px;
+      border-radius: var(--radius-card);
+      padding: 20px 24px 20px 56px;
+      font-size: clamp(17px, 1.85vh, 22px);
+      line-height: 1.42;
+    }
+
+    .checklist li::before,
+    .check-grid li::before {
+      content: "✓";
+      position: absolute;
+      left: 22px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--teal);
+      font-size: 18px;
+      font-weight: 900;
+    }
+
+    .timeline {
+      gap: 14px;
+    }
+
+    .timeline li {
+      grid-template-columns: 150px minmax(0, 1fr);
+      gap: 22px;
+      padding: 14px 0;
+    }
+
+    .quote,
+    .emphasis-box,
+    .callout {
+      border-radius: var(--radius-card);
+    }
+
+    .quote {
+      padding: 22px 0 24px 32px;
+      font-size: clamp(30px, 3.7vh, 44px);
+    }
+
+    .callout,
+    .emphasis-box {
+      padding: 22px 24px;
+      margin-top: 18px;
+    }
+
+    .slide-footer {
+      justify-self: end;
+      align-self: end;
+      z-index: 1;
+      max-width: 720px;
+      padding-top: 10px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.35;
+      text-align: right;
+    }
+
+    .slide-footer span {
+      display: block;
+    }
+
+    .progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 5px;
+      background: rgba(23, 27, 31, 0.08);
+      z-index: 10;
+    }
+
+    .progress span {
+      display: block;
+      height: 100%;
+      width: 100%;
+      background: linear-gradient(90deg, var(--teal), var(--blue), var(--amber));
+      transform-origin: left center;
+      transform: scaleX(0.01);
+      transition: transform 180ms ease;
+    }
+
+    .controls {
+      position: fixed;
+      left: 22px;
+      right: auto;
+      bottom: 20px;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      z-index: 20;
+      background: rgba(255, 255, 255, 0.86);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 8px;
+      box-shadow: 0 8px 24px rgba(23, 27, 31, 0.12);
+      backdrop-filter: blur(10px);
+    }
+
+    button {
+      border: 1px solid var(--line);
+      background: var(--paper);
+      color: var(--ink);
+      min-width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      font-size: 20px;
+      font-weight: 850;
+      cursor: pointer;
+    }
+
+    button:hover {
+      border-color: var(--teal);
+      color: var(--teal);
+    }
+
+    #counter {
+      min-width: 72px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .legacy-deck {
+      display: none !important;
+    }
+
+    .controls a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 40px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 0 14px;
+      color: var(--ink);
+      background: var(--paper);
+      font-size: 14px;
+      font-weight: 850;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .controls a:hover {
+      border-color: var(--teal);
+      color: var(--teal);
+    }
+
+    @media (max-width: 900px) {
+      body {
+        overflow: auto;
+      }
+
+      .deck {
+        padding: 0;
+      }
+
+      .slide,
+      .slide.active {
+        display: grid;
+        width: 100vw;
+        min-height: 100vh;
+        aspect-ratio: auto;
+        max-height: none;
+        border: 0;
+        box-shadow: none;
+        padding: 42px 24px 78px;
+      }
+
+      .slide-header {
+        gap: 14px;
+      }
+
+      .slide-content {
+        margin-top: 34px;
+      }
+
+      h1.slide-title {
+        font-size: 42px;
+      }
+
+      h2.slide-title {
+        font-size: 32px;
+      }
+
+      .slide-subtitle {
+        font-size: 21px;
+      }
+
+      .two-col,
+      .three-col,
+      .compare,
+      .compare-grid,
+      .flow,
+      .flow-grid,
+      .checklist,
+      .check-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .timeline li {
+        grid-template-columns: 1fr;
+      }
+
+      .flow .step:not(:last-child)::after,
+      .flow-grid .step:not(:last-child)::after {
+        content: none;
+      }
+
+      .step {
+        min-height: auto;
+      }
+
+      .slide-footer {
+        justify-self: start;
+        text-align: left;
+      }
+    }
+
+    @media print {
+      @page {
+        size: 16in 9in;
+        margin: 0;
+      }
+
+      body {
+        overflow: visible;
+        background: #ffffff;
+      }
+
+      .deck {
+        display: block;
+        padding: 0;
+      }
+
+      .slide,
+      .slide.active {
+        display: grid !important;
+        width: 16in;
+        height: 9in;
+        max-height: none;
+        box-shadow: none;
+        border: 0;
+        page-break-after: always;
+      }
+
+      .controls,
+      .progress {
+        display: none;
+      }
+
+      .legacy-deck {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="progress" aria-hidden="true"><span id="progressBar"></span></div>
+
+  <main class="deck" aria-live="polite">
+    <section class="slide hero">
+      <div class="slide-header">
+        <p class="eyebrow">AI 초급자 실습</p>
+        <h1 class="slide-title">AI에게 일을 맡기고 결과를 확인하는 첫 경험</h1>
+        <p class="slide-subtitle">완벽한 이해보다 중요한 것은 작게 요청하고, 화면을 보고, 다시 고쳐달라고 말하는 감각입니다.</p>
+      </div>
+      <div class="slide-content">
+        <div class="meta">
+          <span class="tag">AI와 작은 결과물 만들기</span>
+          <span class="tag">2026.06.20</span>
+          <span class="tag">요청 → 확인 → 다시 요청</span>
+        </div>
+      </div>
+      <div class="slide-footer"><span>오늘은 완성도보다 한 번 끝까지 해보는 경험에 집중합니다.</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-header">
+        <p class="eyebrow">오늘의 약속</p>
+        <h2 class="slide-title">전문가가 되는 시간이 아니라, 덜 막막해지는 시간</h2>
+      </div>
+      <div class="slide-content three-col">
+        <div class="panel teal">
+          <h3>질문이 서툴러도 괜찮다</h3>
+          <p>처음 쓰는 도구 앞에서 막막한 것은 자연스럽습니다.</p>
+        </div>
+        <div class="panel coral">
+          <h3>결과물이 단순해도 괜찮다</h3>
+          <p>오늘은 완성도보다 끝까지 해보는 경험이 중요합니다.</p>
+        </div>
+        <div class="panel amber">
+          <h3>다시 요청하면 된다</h3>
+          <p>AI의 첫 답변은 초안이고, 우리는 결과를 보고 고칩니다.</p>
+        </div>
+      </div>
+      <div class="slide-footer"><span>처음부터 잘하는 것보다 다시 묻는 감각이 중요합니다.</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-header">
+        <p class="eyebrow">오늘의 흐름</p>
+        <h2 class="slide-title">오늘 익힐 AI 활용 흐름</h2>
+        <p class="slide-subtitle">막막함을 줄이고, 요청하고, 작게 만들고, 다시 개선합니다.</p>
+      </div>
+      <div class="slide-content flow-grid">
+        <div class="step">
+          <span class="num">1</span>
+          <strong>덜 막막해지기</strong>
+          <span>AI에게 무엇을 맡길 수 있는지 감을 잡습니다.</span>
+        </div>
+        <div class="step">
+          <span class="num">2</span>
+          <strong>잘 요청하기</strong>
+          <span>상황, 목표, 결과물, 조건을 담아 요청합니다.</span>
+        </div>
+        <div class="step">
+          <span class="num">3</span>
+          <strong>작게 만들기</strong>
+          <span>기획 → 설계와 문서화 → 구현 → 검증을 경험합니다.</span>
+        </div>
+        <div class="step">
+          <span class="num">4</span>
+          <strong>다시 개선하기</strong>
+          <span>부족한 결과와 에러를 AI에게 다시 전달합니다.</span>
+        </div>
+      </div>
+      <div class="slide-footer"><span>요청 → 확인 → 다시 요청</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-header">
+        <p class="eyebrow">1부 · 관점</p>
+        <h2 class="slide-title">AI는 마법 지팡이가 아니라 작업 파트너</h2>
+      </div>
+      <div class="slide-content">
+        <div class="quote">AI는 대신 완성해주는 존재가 아니라, 함께 정리하고 고쳐가는 도구입니다.</div>
+        <div class="callout">
+          <p>좋은 질문보다 중요한 것은 결과를 보고 다시 묻는 힘입니다.</p>
+        </div>
+      </div>
+      <div class="slide-footer"><span>처음부터 완벽한 답을 기대하지 않습니다.</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-header">
+        <p class="eyebrow">1부 · 막막함</p>
+        <h2 class="slide-title">막막함은 능력 부족이 아니라 낯섦에서 온다</h2>
+      </div>
+      <div class="slide-content compare-grid">
+        <div class="panel bad">
+          <h3>자주 드는 생각</h3>
+          <ul>
+            <li>무엇을 물어봐야 할지 모르겠다</li>
+            <li>내가 너무 몰라서 못 쓸 것 같다</li>
+            <li>이상한 답이 나오면 어떻게 해야 할지 모르겠다</li>
+          </ul>
+        </div>
+        <div class="panel good">
+          <h3>오늘의 관점</h3>
+          <ul>
+            <li>상황을 설명한다</li>
+            <li>원하는 결과를 말한다</li>
+            <li>나온 결과를 확인한다</li>
+            <li>부족한 부분을 다시 요청한다</li>
+          </ul>
+        </div>
+      </div>
+      <div class="slide-footer"><span>막막함은 작게 쪼개면 다룰 수 있습니다.</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-header">
+        <p class="eyebrow">1부 · 도구 역할</p>
+        <h2 class="slide-title">도구 이름보다 역할을 먼저 본다</h2>
+      </div>
+      <div class="slide-content two-col">
+        <div class="panel teal">
+          <h3>AI 작업자</h3>
+          <p>생각 정리, 요구사항 정리, 코드 작성, 수정 방향 제안을 맡깁니다.</p>
+          <p class="mini">예: Claude, Codex, Antigravity</p>
+        </div>
+        <div class="panel blue">
+          <h3>코드 작업 공간</h3>
+          <p>파일을 보고, 코드를 만들고, 실행 결과를 확인하는 장소입니다.</p>
+          <p class="mini">예: VS Code, Cursor, Antigravity IDE</p>
+        </div>
+      </div>
+      <div class="slide-footer"><span>중요한 질문은 “누구에게 맡기고, 어디서 확인하는가”입니다.</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-header">
+        <p class="eyebrow">1부 · 개발 흐름</p>
+        <h2 class="slide-title">AI 개발은 한 번에 완성품을 받는 일이 아니다</h2>
+      </div>
+      <div class="slide-content flow-grid">
+        <div class="step">
+          <span class="num">1</span>
+          <strong>기획</strong>
+          <span>무엇을 만들지 작게 정한다.</span>
+        </div>
+        <div class="step">
+          <span class="num">2</span>
+          <strong>설계와 문서화</strong>
+          <span>화면과 사용자의 행동을 말로 정리한다.</span>
+        </div>
+        <div class="step">
+          <span class="num">3</span>
+          <strong>구현</strong>
+          <span>AI에게 기준 문서를 주고 결과물을 만들게 한다.</span>
+        </div>
+        <div class="step">
+          <span class="num">4</span>
+          <strong>검증</strong>
+          <span>내가 원한 결과와 실제 결과를 비교한다.</span>
+        </div>
+      </div>
+      <div class="slide-footer"><span>기획 → 설계와 문서화 → 구현 → 검증</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-header">
+        <p class="eyebrow">2부 · 프롬프트 핵심</p>
+        <h2 class="slide-title">좋은 프롬프트는 멋진 문장이 아니라 분명한 요청</h2>
+        <p class="slide-subtitle">AI에게 잘 맡긴다는 것은 원하는 결과를 알아볼 수 있게 건네는 일입니다.</p>
+      </div>
+      <div class="slide-content flow-grid">
+        <div class="step">
+          <span class="num">1</span>
+          <strong>상황</strong>
+          <span>지금 무엇을 하려는지 말합니다.</span>
+        </div>
+        <div class="step">
+          <span class="num">2</span>
+          <strong>목표</strong>
+          <span>왜 이 결과가 필요한지 말합니다.</span>
+        </div>
+        <div class="step">
+          <span class="num">3</span>
+          <strong>결과물</strong>
+          <span>무엇을 받아야 하는지 말합니다.</span>
+        </div>
+        <div class="step">
+          <span class="num">4</span>
+          <strong>조건</strong>
+          <span>범위와 형식을 함께 정합니다.</span>
+        </div>
+      </div>
+      <div class="slide-footer"><span>상황 → 목표 → 결과물 → 조건</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-header">
+        <p class="eyebrow">2부 · 비교</p>
+        <h2 class="slide-title">대략 말하면 대략 나오고, 구체적으로 말하면 쓸 만해진다</h2>
+      </div>
+      <div class="slide-content compare-grid">
+        <div class="panel bad">
+          <h3>아쉬운 요청</h3>
+          <pre>기록장 만들어줘.</pre>
+        </div>
+        <div class="panel good">
+          <h3>좋은 요청</h3>
+          <pre>초보자가 오늘의 기록을 남기고,
+저장된 기록을 다시 볼 수 있는 화면을 만들고 싶어.
+먼저 필요한 기능 5가지만 정리해줘.</pre>
+        </div>
+      </div>
+      <div class="slide-footer"><span>오늘의 실습 예제와 연결되는 질문으로 시작합니다.</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-header">
+        <p class="eyebrow">2부 · 역할</p>
+        <h2 class="slide-title">역할은 필요할 때 답변의 관점을 맞춘다</h2>
+        <p class="slide-subtitle">역할은 꼭 넣어야 하는 공식이 아니라, 설명 방식이나 관점이 필요할 때 덧붙이는 옵션입니다.</p>
+      </div>
+      <div class="slide-content three-col">
+        <div class="panel teal">
+          <h3>초보자 기준</h3>
+          <p>처음 보는 사람도 이해할 수 있게 설명해줘.</p>
+        </div>
+        <div class="panel amber">
+          <h3>서비스 기획자 관점</h3>
+          <p>사용자의 행동과 화면 흐름 중심으로 봐줘.</p>
+        </div>
+        <div class="panel blue">
+          <h3>개발자 기준</h3>
+          <p>바로 구현할 수 있게 항목을 정리해줘.</p>
+        </div>
+      </div>
+      <div class="slide-footer"><span>역할은 필수가 아니라 관점 조정입니다.</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-header">
+        <p class="eyebrow">2부 · 기본 틀</p>
+        <h2 class="slide-title">초급자는 이 틀 하나로 시작하면 된다</h2>
+      </div>
+      <div class="slide-content">
+        <pre>[상황]에서, [목표]를 위해,
+[필요한 결과물]을 [조건과 형식]에 맞춰 정리해줘.</pre>
+        <div class="callout">
+          <p>역할은 필요할 때만 덧붙이면 충분합니다.</p>
+        </div>
+      </div>
+      <div class="slide-footer"><span>문장이 멋질 필요는 없습니다. 분명하면 됩니다.</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-header">
+        <p class="eyebrow">2부 · 실습 안내</p>
+        <h2 class="slide-title">첫 질문보다 중요한 것은 다시 묻는 것</h2>
+      </div>
+      <div class="slide-content flow-grid">
+        <div class="step">
+          <span class="num">1</span>
+          <strong>첫 질문</strong>
+          <span>작게 입력합니다.</span>
+        </div>
+        <div class="step">
+          <span class="num">2</span>
+          <strong>답변 확인</strong>
+          <span>너무 일반적인지 봅니다.</span>
+        </div>
+        <div class="step">
+          <span class="num">3</span>
+          <strong>부족한 점</strong>
+          <span>다음 행동이 보이는지 확인합니다.</span>
+        </div>
+        <div class="step">
+          <span class="num">4</span>
+          <strong>다시 요청</strong>
+          <span>더 작고 선명하게 고칩니다.</span>
+        </div>
+      </div>
+      <div class="slide-footer"><span>화면으로 상상되는가? 더 작게 줄일 수 있는가?</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-header">
+        <p class="eyebrow">쉬는 시간</p>
+        <h2 class="slide-title">쉬는 시간 & 실습 환경 점검</h2>
+        <p class="slide-subtitle">이제부터는 설명보다 직접 해보는 시간이 많아집니다.</p>
+      </div>
+      <div class="slide-content">
+        <ul class="check-grid">
+          <li>AI 채팅 도구 열기</li>
+          <li>Supabase 화면 준비</li>
+          <li>브라우저 준비</li>
+          <li>실습 프롬프트 모음 열기</li>
+          <li>막히면 바로 질문하기</li>
+        </ul>
+      </div>
+      <div class="slide-footer"><span>프롬프트 모음은 별도 파일에서 복사합니다.</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-header">
+        <p class="eyebrow">3부 · 바이브코딩</p>
+        <h2 class="slide-title">바이브코딩은 요청하고 확인하며 작은 결과물을 만드는 경험</h2>
+      </div>
+      <div class="slide-content">
+        <div class="quote">오늘의 목표는 완성된 서비스가 아니라, AI와 함께 기획, 설계와 문서화, 구현, 검증을 한 번 경험하는 것입니다.</div>
+      </div>
+      <div class="slide-footer"><span>작게 만들수록 실습은 선명해집니다.</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-header">
+        <p class="eyebrow">3부 · 공통 예제</p>
+        <h2 class="slide-title">공통 예제: 오늘의 기록장</h2>
+        <p class="slide-subtitle">입력하고, 저장하고, 다시 확인하는 작은 웹페이지입니다.</p>
+      </div>
+      <div class="slide-content two-col">
+        <div class="panel green">
+          <h3>넣을 것</h3>
+          <ul>
+            <li>오늘의 기록 입력</li>
+            <li>저장 버튼</li>
+            <li>저장된 기록 목록</li>
+            <li>Supabase DB 저장</li>
+            <li>새로고침 후 다시 불러오기</li>
+          </ul>
+        </div>
+        <div class="panel bad">
+          <h3>이번에는 제외</h3>
+          <ul>
+            <li>로그인</li>
+            <li>검색과 통계</li>
+            <li>관리자 기능</li>
+            <li>복잡한 권한 관리</li>
+          </ul>
+        </div>
+      </div>
+      <div class="slide-footer"><span>작은 예제로 저장과 불러오기를 경험합니다.</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-header">
+        <p class="eyebrow">3부 · 순서</p>
+        <h2 class="slide-title">오늘의 기록장을 만드는 순서</h2>
+      </div>
+      <div class="slide-content flow-grid">
+        <div class="step">
+          <span class="num">1</span>
+          <strong>기획 문서</strong>
+          <span>목적, 입력, 저장, 화면, 검증 기준을 정리합니다.</span>
+        </div>
+        <div class="step">
+          <span class="num">2</span>
+          <strong>Supabase 테이블</strong>
+          <span>AI가 만든 SQL을 실행하고 테이블을 확인합니다.</span>
+        </div>
+        <div class="step">
+          <span class="num">3</span>
+          <strong>웹페이지 구현</strong>
+          <span>기획 문서와 SQL을 기준으로 요청합니다.</span>
+        </div>
+        <div class="step">
+          <span class="num">4</span>
+          <strong>저장과 불러오기</strong>
+          <span>화면, DB, 새로고침 결과를 확인합니다.</span>
+        </div>
+      </div>
+      <div class="slide-footer"><span>이 슬라이드가 3부의 지도입니다.</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-header">
+        <p class="eyebrow">3부 · 핵심 프롬프트 1</p>
+        <h2 class="slide-title">먼저 짧은 기획 문서를 만든다</h2>
+      </div>
+      <div class="slide-content">
+        <pre>오늘의 기록장 웹페이지를 만들기 위한 짧은 기획 문서를 만들어줘.
+목적, 입력 항목, 저장 동작, 화면 결과, 검증 체크리스트를 포함해줘.</pre>
+        <div class="callout">
+          <p>자세한 프롬프트는 실습 프롬프트 모음에서 복사합니다.</p>
+        </div>
+      </div>
+      <div class="slide-footer"><span>먼저 기준 문서를 만듭니다.</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-header">
+        <p class="eyebrow">3부 · 핵심 프롬프트 2</p>
+        <h2 class="slide-title">문서를 기준으로 구현을 요청한다</h2>
+      </div>
+      <div class="slide-content">
+        <pre>이 기획 문서와 Supabase SQL을 기준으로 웹페이지를 만들어줘.
+저장, 불러오기, 실행 방법, 전체 코드를 포함해줘.</pre>
+        <div class="callout">
+          <p>기준 문서를 함께 주면 AI의 답변이 더 선명해집니다.</p>
+        </div>
+      </div>
+      <div class="slide-footer"><span>긴 구현 요청은 실습 프롬프트 모음으로 분리했습니다.</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-header">
+        <p class="eyebrow">3부 · 검증</p>
+        <h2 class="slide-title">AI가 만들었다고 끝난 것이 아니다</h2>
+      </div>
+      <div class="slide-content">
+        <ul class="check-grid">
+          <li>문서와 화면이 같은가?</li>
+          <li>저장 버튼이 동작하는가?</li>
+          <li>Supabase DB에 들어갔는가?</li>
+          <li>새로고침 후 다시 보이는가?</li>
+          <li>빈 입력값일 때 안내가 나오는가?</li>
+          <li>화면이 너무 복잡하지 않은가?</li>
+        </ul>
+      </div>
+      <div class="slide-footer"><span>결과를 보는 힘이 AI 활용의 핵심입니다.</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-header">
+        <p class="eyebrow">3부 · 에러 대처</p>
+        <h2 class="slide-title">에러는 실패가 아니라 다시 물어볼 재료</h2>
+      </div>
+      <div class="slide-content">
+        <pre>나는 코딩을 잘 몰라.
+원인을 쉽게 설명해주고, 고친 전체 코드를 다시 줘.</pre>
+        <div class="three-col">
+          <div class="panel teal">
+            <h3>에러 메시지</h3>
+            <p>그대로 복사합니다.</p>
+          </div>
+          <div class="panel amber">
+            <h3>현재 상황</h3>
+            <p>언제, 어디서 났는지 말합니다.</p>
+          </div>
+          <div class="panel coral">
+            <h3>원하는 결과</h3>
+            <p>어떻게 되길 바라는지 말합니다.</p>
+          </div>
+        </div>
+      </div>
+      <div class="slide-footer"><span>에러도 다음 요청의 재료입니다.</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-header">
+        <p class="eyebrow">3부 · 확장</p>
+        <h2 class="slide-title">같은 흐름을 내 아이디어에 적용한다</h2>
+      </div>
+      <div class="slide-content flow-grid">
+        <div class="step">
+          <span class="num">1</span>
+          <strong>주제 바꾸기</strong>
+          <span>오늘의 기록장을 다른 소재로 바꿉니다.</span>
+        </div>
+        <div class="step">
+          <span class="num">2</span>
+          <strong>입력 항목</strong>
+          <span>기록할 내용을 2~3개로 정합니다.</span>
+        </div>
+        <div class="step">
+          <span class="num">3</span>
+          <strong>문서 다시 만들기</strong>
+          <span>목적, 입력, 저장, 화면을 다시 씁니다.</span>
+        </div>
+        <div class="step">
+          <span class="num">4</span>
+          <strong>다시 구현하기</strong>
+          <span>기준 문서를 AI에게 주고 변경을 요청합니다.</span>
+        </div>
+      </div>
+      <div class="slide-footer"><span>독서 기록장, 운동 루틴 기록, 상품 아이디어 메모장, 고객 상담 메모장</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-header">
+        <p class="eyebrow">마무리 · 복습</p>
+        <h2 class="slide-title">오늘 한 일</h2>
+      </div>
+      <div class="slide-content">
+        <ol class="timeline">
+          <li><strong>1</strong><span>AI를 작업 파트너로 이해했다.</span></li>
+          <li><strong>2</strong><span>상황, 목표, 결과물, 조건으로 요청했다.</span></li>
+          <li><strong>3</strong><span>오늘의 기록장을 작게 기획했다.</span></li>
+          <li><strong>4</strong><span>Supabase와 웹페이지를 연결해봤다.</span></li>
+          <li><strong>5</strong><span>부족한 결과와 에러를 다시 AI에게 전달했다.</span></li>
+        </ol>
+      </div>
+      <div class="slide-footer"><span>작게 요청하고, 확인하고, 다시 요청했습니다.</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-header">
+        <p class="eyebrow">마무리 · Q&A</p>
+        <h2 class="slide-title">질문은 구체적이지 않아도 괜찮다</h2>
+      </div>
+      <div class="slide-content">
+        <ul class="check-grid">
+          <li>프롬프트에 역할을 꼭 넣어야 하나요?</li>
+          <li>Supabase 연결 정보는 어디에 넣어야 하나요?</li>
+          <li>저장 버튼을 눌렀는데 DB에 안 들어가면 어떻게 하나요?</li>
+          <li>에러 메시지가 영어로 나오면 어떻게 물어봐야 하나요?</li>
+          <li>오늘 만든 기록장을 제 아이디어로 바꾸려면 어디부터 바꾸나요?</li>
+        </ul>
+      </div>
+      <div class="slide-footer"><span>기초적인 질문일수록 좋습니다.</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-header">
+        <p class="eyebrow">마무리 · 연결점</p>
+        <h2 class="slide-title">오늘의 작은 시도는 나중에 연결점이 됩니다</h2>
+      </div>
+      <div class="slide-content">
+        <div class="quote">“You can’t connect the dots looking forward;<br>you can only connect them looking backwards.”<br><br>— Steve Jobs</div>
+        <div class="callout">
+          <p>오늘 만든 작은 결과물, 오늘 만난 에러, 오늘 다시 질문했던 경험은 나중에 더 큰 시도의 연결점이 됩니다.</p>
+        </div>
+      </div>
+      <div class="slide-footer"><span>오늘의 경험을 다음 시도의 재료로 가져갑니다.</span></div>
+    </section>
+  </main>
+
+  <main class="deck legacy-deck" aria-hidden="true" hidden>
+    <section class="slide hero">
+      <div class="slide-header">
+        <p class="eyebrow">AI 초급자 강의</p>
+        <h1 class="slide-title">AI에게 일을 맡기고 결과를 확인하는 첫 경험</h1>
+        <p class="slide-subtitle">완벽한 이해보다 중요한 것은 작게 요청하고, 화면을 보고, 다시 고쳐달라고 말하는 감각입니다.</p>
+      </div>
+      <div class="slide-content">
+        <div class="meta">
+          <span class="tag">2026.06.20</span>
+          <span class="tag">초급자 실습</span>
+          <span class="tag">AI와 작은 결과물 만들기</span>
+        </div>
+      </div>
+      <div class="slide-footer"><span>AI 초급자 강의자료</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-header">
+        <p class="eyebrow">오늘의 약속</p>
+        <h2 class="slide-title">전문가가 되는 시간이 아니라, 덜 막막해지는 시간</h2>
+      </div>
+      <div class="slide-content three-col">
+        <div class="panel teal">
+          <h3>질문이 서툴러도 괜찮다</h3>
+          <p>처음 쓰는 도구 앞에서 막막한 것은 자연스러운 반응입니다.</p>
+        </div>
+        <div class="panel coral">
+          <h3>결과물이 단순해도 괜찮다</h3>
+          <p>오늘 중요한 것은 완성도보다 한 번 끝까지 해보는 경험입니다.</p>
+        </div>
+        <div class="panel amber">
+          <h3>다시 요청하면 된다</h3>
+          <p>AI의 첫 답변은 초안이고, 우리는 그것을 보고 방향을 고칩니다.</p>
+        </div>
+      </div>
+      <div class="slide-footer"><span>완벽함보다 경험</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-header">
+        <p class="eyebrow">학습 목표</p>
+        <h2 class="slide-title">오늘 익힐 AI 활용 흐름</h2>
+        <p class="slide-subtitle">막막함을 줄이고, 요청하고, 작게 만들고, 다시 개선합니다.</p>
+      </div>
+      <div class="slide-content">
+        <div class="flow-grid">
+          <div class="step">
+            <span class="num">01</span>
+            <strong>덜 막막해지기</strong>
+            <span>AI에게 무엇을 맡길 수 있는지 감을 잡습니다.</span>
+          </div>
+          <div class="step">
+            <span class="num">02</span>
+            <strong>잘 요청하기</strong>
+            <span>상황, 목표, 결과물, 조건을 담아 요청합니다.</span>
+          </div>
+          <div class="step">
+            <span class="num">03</span>
+            <strong>작게 만들기</strong>
+            <span>기획 → 설계와 문서화 → 구현 → 검증을 한 번 경험합니다.</span>
+          </div>
+          <div class="step">
+            <span class="num">04</span>
+            <strong>다시 개선하기</strong>
+            <span>부족한 결과와 에러를 AI에게 다시 전달합니다.</span>
+          </div>
+        </div>
+      </div>
+      <div class="slide-footer"><span>요청 → 확인 → 다시 요청</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-header">
+        <p class="eyebrow">전체 흐름</p>
+        <h2 class="slide-title">오프닝에서 실습까지 이어지는 강의 흐름</h2>
+      </div>
+      <div class="slide-content">
+        <ol class="timeline">
+          <li><strong>오프닝</strong><span>AI 앞에서 막막해도 괜찮다는 마음가짐을 잡는다.</span></li>
+          <li><strong>1부</strong><span>AI를 작업 파트너로 이해하고 개발 흐름을 살펴본다.</span></li>
+          <li><strong>2부</strong><span>프롬프트의 기본 공식을 배우고 직접 다듬어본다.</span></li>
+          <li><strong>3부</strong><span>오늘의 기록장 예제로 문서화, Supabase, 구현, 검증을 경험한다.</span></li>
+          <li><strong>마무리</strong><span>복습하고, 질문하고, 내 일상에 적용할 작은 일을 고른다.</span></li>
+        </ol>
+      </div>
+      <div class="slide-footer"><span>순서대로 쌓아가기</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-header">
+        <p class="eyebrow">1부</p>
+        <h2 class="slide-title">AI는 마법 지팡이가 아니라 작업 파트너</h2>
+      </div>
+      <div class="slide-content">
+        <p class="quote">AI를 잘 쓰는 사람은 처음부터 완벽한 질문을 하는 사람이 아니라, 나온 답을 보고 다시 지시할 수 있는 사람입니다.</p>
+      </div>
+      <div class="slide-footer"><span>정답 기계보다 협업 상대</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-header">
+        <p class="eyebrow">초급자의 막막함</p>
+        <h2 class="slide-title">막막함은 능력 부족이 아니라 낯섦에서 온다</h2>
+      </div>
+      <div class="slide-content two-col">
+        <div class="panel teal">
+          <h3>자주 드는 생각</h3>
+          <ul>
+            <li>무엇을 물어봐야 할지 모르겠다.</li>
+            <li>내가 너무 모르면 AI를 못 쓸 것 같다.</li>
+            <li>이상한 답이 나오면 어떻게 해야 할지 모르겠다.</li>
+            <li>코딩을 몰라서 개발 도구는 못 쓸 것 같다.</li>
+          </ul>
+        </div>
+        <div class="panel green">
+          <h3>오늘의 관점</h3>
+          <ul>
+            <li>상황을 설명한다.</li>
+            <li>원하는 결과를 말한다.</li>
+            <li>나온 결과를 읽고 확인한다.</li>
+            <li>부족한 부분을 다시 요청한다.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="slide-footer"><span>처음 쓰는 도구는 누구나 낯설다</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-header">
+        <p class="eyebrow">요청 비교</p>
+        <h2 class="slide-title">대략 말하면 대략 나오고, 구체적으로 말하면 쓸 만해진다</h2>
+      </div>
+      <div class="slide-content compare-grid">
+        <div class="panel bad">
+          <h3>아쉬운 요청</h3>
+          <pre>운동 기록 앱 만들어줘.</pre>
+        </div>
+        <div class="panel good">
+          <h3>좋은 요청</h3>
+          <pre>초보자가 오늘 한 운동을 간단히 기록하고,
+저장한 기록을 목록으로 다시 볼 수 있는 화면을 만들고 싶어.
+먼저 필요한 기능 5가지만 정리해줘.</pre>
+        </div>
+      </div>
+      <div class="slide-footer"><span>상황, 목적, 결과</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-header">
+        <p class="eyebrow">AI 개발 도구</p>
+        <h2 class="slide-title">도구 이름보다 역할을 먼저 구분한다</h2>
+      </div>
+      <div class="slide-content two-col">
+        <div class="panel blue">
+          <h3>AI 작업자</h3>
+          <p>생각 정리, 요구사항 정리, 코드 작성, 수정 방향 제안을 도와준다.</p>
+          <p class="mini">예: Claude, Codex, Antigravity</p>
+        </div>
+        <div class="panel amber">
+          <h3>코드 작업 공간</h3>
+          <p>실제 파일을 보고, 코드를 만들고, 실행 결과를 확인하는 장소다.</p>
+          <p class="mini">예: VS Code, Cursor, Antigravity IDE</p>
+        </div>
+      </div>
+      <div class="slide-footer"><span>누구에게 맡기고 어디서 확인하는가</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-header">
+        <p class="eyebrow">도구별 감각</p>
+        <h2 class="slide-title">각 도구는 이런 역할로 이해하면 충분하다</h2>
+      </div>
+      <div class="slide-content three-col">
+        <div class="panel teal">
+          <h3>Claude</h3>
+          <p>생각 정리, 설명, 요구사항 초안 작성에 강한 AI 작업자</p>
+        </div>
+        <div class="panel coral">
+          <h3>Codex</h3>
+          <p>코드 작성, 파일 수정, 테스트 실행처럼 개발 작업에 가까운 AI 작업자</p>
+        </div>
+        <div class="panel blue">
+          <h3>Cursor / VS Code</h3>
+          <p>코드를 열고 편집하며 결과를 확인하는 작업 공간</p>
+        </div>
+      </div>
+      <div class="slide-footer"><span>외우기보다 흐름 이해</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-header">
+        <p class="eyebrow">AI 개발 흐름</p>
+        <h2 class="slide-title">AI 개발은 한 번에 완성품을 받는 일이 아니다</h2>
+      </div>
+      <div class="slide-content flow-grid">
+        <div class="step">
+          <span class="num">1</span>
+          <strong>기획</strong>
+          <span>무엇을 만들지 작게 정한다.</span>
+        </div>
+        <div class="step">
+          <span class="num">2</span>
+          <strong>설계와 문서화</strong>
+          <span>화면과 사용자의 행동을 말로 정리한다.</span>
+        </div>
+        <div class="step">
+          <span class="num">3</span>
+          <strong>구현</strong>
+          <span>AI에게 기준 문서를 주고 결과물을 만들게 한다.</span>
+        </div>
+        <div class="step">
+          <span class="num">4</span>
+          <strong>검증</strong>
+          <span>내가 원한 결과와 실제 결과를 비교한다.</span>
+        </div>
+      </div>
+      <div class="slide-footer"><span>반복해서 다듬기</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-header">
+        <p class="eyebrow">검증 감각</p>
+        <h2 class="slide-title">코드를 몰라도 확인할 수 있는 질문이 있다</h2>
+      </div>
+      <div class="slide-content">
+        <ul class="check-grid">
+          <li>버튼이 보이는가?</li>
+          <li>입력창에 글자를 넣을 수 있는가?</li>
+          <li>버튼을 누르면 결과가 생기는가?</li>
+          <li>새로고침해도 기록이 남아 있는가?</li>
+          <li>화면이 너무 복잡하지 않은가?</li>
+          <li>내가 요청한 목적과 맞는가?</li>
+        </ul>
+      </div>
+      <div class="slide-footer"><span>화면과 동작이 첫 검증 기준</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-header">
+        <p class="eyebrow">2부</p>
+        <h2 class="slide-title">좋은 프롬프트는 멋진 문장이 아니라 분명한 요청</h2>
+      </div>
+      <div class="slide-content">
+        <p class="quote">AI에게 잘 맡긴다는 것은 멋있게 말하는 것이 아니라, 상황과 원하는 결과를 알아볼 수 있게 건네는 일입니다.</p>
+      </div>
+      <div class="slide-footer"><span>상황 → 목표 → 결과물 → 조건</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-header">
+        <p class="eyebrow">역할</p>
+        <h2 class="slide-title">역할은 필요할 때 답변의 관점을 맞춘다</h2>
+      </div>
+      <div class="slide-content two-col">
+        <div class="panel teal">
+          <h3>쉽게 설명받고 싶을 때</h3>
+          <pre>너는 초보자를 가르치는 개발 강사야.</pre>
+        </div>
+        <div class="panel blue">
+          <h3>기획 관점이 필요할 때</h3>
+          <pre>너는 10년 차 서비스 기획자야.</pre>
+        </div>
+      </div>
+      <div class="slide-footer"><span>필수보다 방향 조정에 가깝다</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-header">
+        <p class="eyebrow">명확한 지시</p>
+        <h2 class="slide-title">“기획해줘”보다 무엇을 기획할지 말한다</h2>
+      </div>
+      <div class="slide-content compare-grid">
+        <div class="panel bad">
+          <h3>흐린 지시</h3>
+          <pre>기획해줘.</pre>
+        </div>
+        <div class="panel good">
+          <h3>선명한 지시</h3>
+          <pre>MMA 체육관 정보를 찾고
+스파링 기록을 남기는 커뮤니티 앱의
+핵심 기능 3가지를 표로 정리해줘.</pre>
+        </div>
+      </div>
+      <div class="slide-footer"><span>대상과 결과물을 함께 말하기</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-header">
+        <p class="eyebrow">조건과 형식</p>
+        <h2 class="slide-title">답변의 범위와 모양을 함께 정한다</h2>
+      </div>
+      <div class="slide-content">
+        <ul class="check-grid">
+          <li>핵심 기능 3가지만</li>
+          <li>표 형태로</li>
+          <li>초보자도 이해하기 쉽게</li>
+          <li>너무 기술적인 용어는 피해서</li>
+          <li>우선순위와 이유를 함께</li>
+          <li>실습에서 만들 수 있는 작은 범위로</li>
+        </ul>
+      </div>
+      <div class="slide-footer"><span>AI가 답할 테두리 만들기</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-header">
+        <p class="eyebrow">기본 공식</p>
+        <h2 class="slide-title">초급자는 이 틀 하나로 시작하면 된다</h2>
+      </div>
+      <div class="slide-content">
+        <pre>[상황]에서,
+[목표]를 위해,
+[필요한 결과물]을
+[조건과 형식]에 맞춰 정리해줘.</pre>
+        <div class="emphasis-box">
+          <p>역할은 꼭 넣어야 하는 공식이 아닙니다. 설명 방식이나 관점이 필요할 때만 덧붙이면 충분합니다.</p>
+        </div>
+      </div>
+      <div class="slide-footer"><span>한 번에 완성하지 않아도 된다</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-header">
+        <p class="eyebrow">예시 프롬프트</p>
+        <h2 class="slide-title">상황, 목표, 결과물, 조건이 보이는 요청</h2>
+      </div>
+      <div class="slide-content">
+        <pre>MMA 체육관 정보와 스파링 기록을 남길 수 있는
+작은 웹서비스를 기획하려고 해.
+
+초급자가 실습으로 만들 수 있게
+핵심 기능 3가지를 표 형태로 정리해줘.
+너무 기술적인 말은 피하고, 쉬운 말로 설명해줘.</pre>
+      </div>
+      <div class="slide-footer"><span>복사해서 구조만 바꿔 쓰기</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-header">
+        <p class="eyebrow">프롬프트 실습</p>
+        <h2 class="slide-title">완벽한 문장이 아니라, 가까워지는 경험이 목표</h2>
+      </div>
+      <div class="slide-content two-col">
+        <div class="panel teal">
+          <h3>아이디어 예시</h3>
+          <ul>
+            <li>운동 기록장</li>
+            <li>여행 준비 체크리스트</li>
+            <li>업무 메모 정리 도구</li>
+            <li>상품 아이디어 메모장</li>
+            <li>고객 상담 기록 정리</li>
+          </ul>
+        </div>
+        <div class="panel amber">
+          <h3>작성할 세 가지</h3>
+          <ol>
+            <li>AI에게 줄 역할</li>
+            <li>무엇을 해달라는지</li>
+            <li>조건이나 형식</li>
+          </ol>
+        </div>
+      </div>
+      <div class="slide-footer"><span>아이디어 하나만 고르기</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-header">
+        <p class="eyebrow">1차 프롬프트</p>
+        <h2 class="slide-title">먼저 한 번 요청해본다</h2>
+      </div>
+      <div class="slide-content">
+        <pre>너는 초보 창업자를 돕는 서비스 기획자야.
+반려동물 산책 기록 앱을 만들고 싶어.
+핵심 기능 3가지를 표로 정리해줘.
+초보자도 이해하기 쉽게 설명해줘.</pre>
+      </div>
+      <div class="slide-footer"><span>일단 AI 답변을 받아보기</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-header">
+        <p class="eyebrow">답변 확인</p>
+        <h2 class="slide-title">AI 답변을 받은 뒤 확인할 질문</h2>
+      </div>
+      <div class="slide-content">
+        <ul class="check-grid">
+          <li>이 답변을 보면 다음 행동을 할 수 있는가?</li>
+          <li>너무 일반적인가?</li>
+          <li>내가 생각한 방향과 다른가?</li>
+          <li>너무 길거나 추상적인가?</li>
+          <li>초보자가 만들기에는 너무 복잡한가?</li>
+          <li>화면으로 상상할 수 있는가?</li>
+        </ul>
+      </div>
+      <div class="slide-footer"><span>마음에 안 드는 부분이 다음 요청의 재료</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-header">
+        <p class="eyebrow">2차 프롬프트</p>
+        <h2 class="slide-title">부족한 답변은 실패가 아니라 추가 요청의 재료</h2>
+      </div>
+      <div class="slide-content">
+        <pre>좋아. 그런데 너무 일반적이야.
+실제 사용자가 처음 화면에 들어왔을 때 볼 화면 중심으로 다시 정리해줘.</pre>
+        <pre>이 아이디어는 커뮤니티보다 기록 기능이 더 중요해.
+기록 기능 중심으로 다시 제안해줘.</pre>
+        <pre>초보 개발자가 만들 수 있게 기능을 더 작게 쪼개줘.</pre>
+      </div>
+      <div class="slide-footer"><span>방향을 말하면 답변도 바뀐다</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-header">
+        <p class="eyebrow">공유</p>
+        <h2 class="slide-title">전체 아이디어보다 바뀐 지점을 공유한다</h2>
+      </div>
+      <div class="slide-content three-col">
+        <div class="panel teal">
+          <h3>범위가 줄었다</h3>
+          <p>처음에는 너무 넓게 나왔는데, 다시 요청하니 기능이 줄어들었다.</p>
+        </div>
+        <div class="panel coral">
+          <h3>화면이 보였다</h3>
+          <p>화면 중심으로 물어보니 더 이해하기 쉬워졌다.</p>
+        </div>
+        <div class="panel green">
+          <h3>쉬워졌다</h3>
+          <p>초보자 기준이라고 말하니 답변이 단순해졌다.</p>
+        </div>
+      </div>
+      <div class="slide-footer"><span>질문을 고치면 결과가 바뀐다</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-header">
+        <p class="eyebrow">3부</p>
+        <h2 class="slide-title">바이브코딩은 요청하고 확인하며 작은 결과물을 만드는 경험</h2>
+      </div>
+      <div class="slide-content">
+        <p class="quote">오늘의 목표는 완성된 서비스가 아니라, AI와 함께 기획, 설계와 문서화, 구현, 검증을 한 번 경험하는 것입니다.</p>
+      </div>
+      <div class="slide-footer"><span>코드를 모두 이해하지 못해도 흐름은 따라갈 수 있다</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-header">
+        <p class="eyebrow">공통 예제</p>
+        <h2 class="slide-title">오늘의 기록장</h2>
+      </div>
+      <div class="slide-content two-col">
+        <div class="panel teal">
+          <h3>만들 것</h3>
+          <p>사용자가 오늘 있었던 일을 입력하고 저장하면, 저장된 기록을 화면에서 다시 볼 수 있는 작은 웹페이지</p>
+        </div>
+        <div class="panel blue">
+          <h3>가능하면 연결할 것</h3>
+          <p>Supabase 데이터베이스에 기록을 저장하고, 새로고침 후 다시 불러오기</p>
+        </div>
+      </div>
+      <div class="slide-footer"><span>같은 화면으로 함께 따라가기</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-header">
+        <p class="eyebrow">바이브코딩 3원칙</p>
+        <h2 class="slide-title">실습 중 계속 기억할 세 가지</h2>
+      </div>
+      <div class="slide-content three-col">
+        <div class="panel teal">
+          <h3>겁먹지 않기</h3>
+          <p>코드를 모두 이해하지 못해도 결과를 보고 말할 수 있다.</p>
+        </div>
+        <div class="panel coral">
+          <h3>구체적으로 요청하기</h3>
+          <p>무엇을 저장하고 어떤 화면을 보여줄지 말한다.</p>
+        </div>
+        <div class="panel amber">
+          <h3>에러를 다시 묻기</h3>
+          <p>에러 메시지, 현재 상황, 원하는 결과를 AI에게 전달한다.</p>
+        </div>
+      </div>
+      <div class="slide-footer"><span>요청한다. 확인한다. 다시 요청한다.</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-header">
+        <p class="eyebrow">기획하기</p>
+        <h2 class="slide-title">처음부터 많이 넣지 않고 핵심 기능만 남긴다</h2>
+      </div>
+      <div class="slide-content two-col">
+        <div class="panel green">
+          <h3>이번 실습에 넣을 것</h3>
+          <ul>
+            <li>오늘 있었던 일 입력</li>
+            <li>저장 버튼</li>
+            <li>저장된 기록 목록</li>
+            <li>새로고침 후 기록 다시 보기</li>
+            <li>Supabase DB 저장</li>
+          </ul>
+        </div>
+        <div class="panel bad">
+          <h3>이번에는 제외할 것</h3>
+          <ul>
+            <li>로그인과 회원가입</li>
+            <li>검색과 통계</li>
+            <li>관리자 기능</li>
+            <li>복잡한 권한 관리</li>
+          </ul>
+        </div>
+      </div>
+      <div class="slide-footer"><span>작을수록 실습이 선명해진다</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-header">
+        <p class="eyebrow">문서화</p>
+        <h2 class="slide-title">문서는 AI에게 다음 작업을 맡기기 위한 기준점</h2>
+      </div>
+      <div class="slide-content">
+        <ul class="check-grid">
+          <li>웹페이지의 목적</li>
+          <li>사용자가 입력해야 할 정보</li>
+          <li>저장 버튼을 눌렀을 때의 동작</li>
+          <li>Supabase에 저장되어야 할 데이터</li>
+          <li>화면에서 확인해야 할 결과</li>
+          <li>완성 후 검증 체크리스트</li>
+        </ul>
+      </div>
+      <div class="slide-footer"><span>문서가 선명하면 구현도 선명해진다</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-header">
+        <p class="eyebrow">기획 문서 요청</p>
+        <h2 class="slide-title">기획 문서 프롬프트</h2>
+      </div>
+      <div class="slide-content">
+        <pre>오늘의 기록장 웹페이지를 만들기 위한 짧은 기획 문서를 만들어줘.
+
+목표:
+사용자가 오늘의 기록을 남기고 저장한 기록을 다시 확인할 수 있는 웹페이지를 만들고 싶어.
+저장한 내용은 Supabase DB에도 저장되게 할 거야.
+
+문서에 포함할 내용:
+- 이 웹페이지의 목적
+- 사용자가 입력해야 할 정보
+- 저장 버튼을 눌렀을 때의 동작
+- Supabase에 저장되어야 할 데이터
+- 화면에서 확인해야 할 결과
+- 완성 후 검증 체크리스트
+
+초보자도 이해할 수 있게 짧고 명확하게 정리해줘.</pre>
+      </div>
+      <div class="slide-footer"><span>먼저 문서부터 만들기</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-header">
+        <p class="eyebrow">Supabase</p>
+        <h2 class="slide-title">Supabase는 기록을 맡겨두는 온라인 저장소</h2>
+      </div>
+      <div class="slide-content two-col">
+        <div class="panel teal">
+          <h3>확인할 것</h3>
+          <ul>
+            <li>테이블이 만들어졌는가?</li>
+            <li>기록이 저장되는가?</li>
+            <li>새로고침 후 다시 불러오는가?</li>
+          </ul>
+        </div>
+        <div class="panel coral">
+          <h3>보안 주의</h3>
+          <ul>
+            <li>개인정보나 민감한 정보는 넣지 않는다.</li>
+            <li>웹페이지에는 Project URL과 anon public key만 넣는다.</li>
+            <li>service_role key는 절대 넣지 않는다.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="slide-footer"><span>초급자는 저장과 불러오기만 확인</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-header">
+        <p class="eyebrow">SQL 요청</p>
+        <h2 class="slide-title">Supabase SQL을 AI에게 만들게 한다</h2>
+      </div>
+      <div class="slide-content">
+        <pre>아래 기획 문서를 보고 Supabase SQL Editor에서 실행할 SQL을 만들어줘.
+
+요청:
+- 필요한 테이블 이름과 컬럼을 스스로 판단해줘.
+- SQL Editor에 바로 붙여넣어 실행할 수 있는 전체 SQL을 줘.
+- Row Level Security를 켜고, 초보자 실습용으로 select와 insert가 가능하도록 policy를 포함해줘.
+- 같은 policy가 이미 있어도 다시 실행할 수 있게 drop policy if exists를 포함해줘.
+- 설명은 짧게 하고, 실행할 SQL은 코드블록으로 줘.
+
+기획 문서:
+[기획 문서 붙여넣기]</pre>
+      </div>
+      <div class="slide-footer"><span>붙여넣고 실행할 수 있는 형태로 받기</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-header">
+        <p class="eyebrow">Supabase에서 할 일</p>
+        <h2 class="slide-title">SQL을 받은 뒤 Supabase에서 확인한다</h2>
+      </div>
+      <div class="slide-content flow-grid">
+        <div class="step">
+          <span class="num">1</span>
+          <strong>SQL Editor</strong>
+          <span>AI가 만든 SQL 코드블록을 붙여넣고 Run을 누른다.</span>
+        </div>
+        <div class="step">
+          <span class="num">2</span>
+          <strong>Table Editor</strong>
+          <span>테이블이 생겼는지 확인한다.</span>
+        </div>
+        <div class="step">
+          <span class="num">3</span>
+          <strong>API Settings</strong>
+          <span>Project URL과 anon public key를 확인한다.</span>
+        </div>
+        <div class="step">
+          <span class="num">4</span>
+          <strong>주의</strong>
+          <span>service_role key는 웹페이지 코드에 넣지 않는다.</span>
+        </div>
+      </div>
+      <div class="slide-footer"><span>생성, 확인, 연결 정보</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-header">
+        <p class="eyebrow">구현 요청</p>
+        <h2 class="slide-title">기획 문서와 SQL을 기준으로 구현을 요청한다</h2>
+      </div>
+      <div class="slide-content">
+        <pre>아래 기획 문서와 Supabase SQL을 기준으로 웹페이지를 만들어줘.
+
+요청:
+- 사용자가 기록을 입력하고 저장할 수 있게 해줘.
+- 저장 버튼을 누르면 Supabase에 저장되게 해줘.
+- 페이지를 처음 열 때 Supabase에서 저장된 기록을 불러와 보여줘.
+- Supabase Project URL과 anon public key를 넣는 위치를 표시해줘.
+- service_role key는 절대 사용하지 않게 해줘.
+- 초보자가 따라 할 수 있게 필요한 파일, 설치 방법, 실행 방법을 순서대로 알려줘.
+- 최종 코드는 생략하지 말고 전체를 줘.
+
+기획 문서:
+[기획 문서 붙여넣기]
+
+Supabase SQL:
+[SQL 붙여넣기]</pre>
+      </div>
+      <div class="slide-footer"><span>기준 자료를 함께 전달하기</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-header">
+        <p class="eyebrow">구현 답변 확인</p>
+        <h2 class="slide-title">AI 답변을 받은 뒤 바로 따라 하지 말고 확인한다</h2>
+      </div>
+      <div class="slide-content">
+        <ul class="check-grid">
+          <li>어떤 파일을 만들라고 하는가?</li>
+          <li>어떤 명령을 실행하라고 하는가?</li>
+          <li>Project URL과 anon public key를 어디에 넣는가?</li>
+          <li>service_role key를 쓰지 않는가?</li>
+          <li>초보자가 따라 하기 너무 복잡하지 않은가?</li>
+          <li>복잡하면 더 단순한 방식으로 다시 요청했는가?</li>
+        </ul>
+      </div>
+      <div class="slide-footer"><span>답변도 검토 대상</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-header">
+        <p class="eyebrow">검증</p>
+        <h2 class="slide-title">AI가 코드를 만들었다고 끝난 것이 아니다</h2>
+      </div>
+      <div class="slide-content flow-grid">
+        <div class="step">
+          <span class="num">1</span>
+          <strong>문서 기준</strong>
+          <span>기획 문서와 실제 화면이 맞는지 비교한다.</span>
+        </div>
+        <div class="step">
+          <span class="num">2</span>
+          <strong>화면 동작</strong>
+          <span>테스트 기록을 입력하고 저장 버튼을 누른다.</span>
+        </div>
+        <div class="step">
+          <span class="num">3</span>
+          <strong>DB 저장</strong>
+          <span>Supabase Table Editor에서 기록을 확인한다.</span>
+        </div>
+        <div class="step">
+          <span class="num">4</span>
+          <strong>새로고침</strong>
+          <span>브라우저를 새로고침해 기록이 다시 보이는지 확인한다.</span>
+        </div>
+      </div>
+      <div class="slide-footer"><span>문서, 화면, DB, 새로고침</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-header">
+        <p class="eyebrow">테스트 문장</p>
+        <h2 class="slide-title">실습 중 사용할 테스트 기록</h2>
+      </div>
+      <div class="slide-content">
+        <pre>오늘 Supabase 저장 실습을 했다.</pre>
+        <div class="emphasis-box">
+          <p>저장 버튼을 눌렀을 때 화면 목록에 추가되고, Supabase 테이블에도 들어가며, 새로고침 후에도 다시 보여야 합니다.</p>
+        </div>
+      </div>
+      <div class="slide-footer"><span>테스트 데이터는 단순하게</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-header">
+        <p class="eyebrow">검증 체크리스트 요청</p>
+        <h2 class="slide-title">검증 체크리스트도 AI에게 만들게 할 수 있다</h2>
+      </div>
+      <div class="slide-content">
+        <pre>아래 기획 문서와 현재 결과물을 기준으로
+초보자가 확인할 수 있는 검증 체크리스트를 만들어줘.
+
+확인하고 싶은 것:
+- 화면이 기획 문서와 맞는지
+- 저장 버튼이 작동하는지
+- Supabase DB에 데이터가 저장되는지
+- 새로고침 후 기록이 다시 보이는지
+- 빈 입력값일 때 안내가 나오는지
+- 모바일 화면에서 깨지지 않는지
+
+기획 문서:
+[기획 문서 붙여넣기]
+
+현재 구현 내용:
+[현재 파일 구조나 코드 붙여넣기]</pre>
+      </div>
+      <div class="slide-footer"><span>확인할 항목도 구체적으로 말하기</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-header">
+        <p class="eyebrow">에러 대처</p>
+        <h2 class="slide-title">에러는 실패가 아니라 AI에게 다시 물어볼 재료</h2>
+      </div>
+      <div class="slide-content">
+        <pre>아래 에러가 나왔어. 나는 코딩을 잘 몰라.
+원인을 쉽게 설명해주고, 고친 전체 코드를 다시 줘.
+
+에러 메시지:
+[에러 메시지 붙여넣기]</pre>
+        <div class="emphasis-box">
+          <p>에러 메시지, 현재 상황, 원하는 결과를 함께 전달하면 AI가 훨씬 정확하게 도와줄 수 있습니다.</p>
+        </div>
+      </div>
+      <div class="slide-footer"><span>그대로 복사해서 묻기</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-header">
+        <p class="eyebrow">동작이 다를 때</p>
+        <h2 class="slide-title">기획 문서와 다르게 작동하면 비교를 요청한다</h2>
+      </div>
+      <div class="slide-content">
+        <pre>기획 문서에는 저장한 기록을 다시 확인할 수 있어야 한다고 되어 있는데,
+현재 화면에서는 새로고침 후 기록이 보이지 않아.
+
+기획 문서와 현재 구현 내용을 비교해서 빠진 부분을 찾아주고,
+고친 전체 코드를 다시 줘.</pre>
+      </div>
+      <div class="slide-footer"><span>원하는 결과와 현재 결과를 함께 말하기</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-header">
+        <p class="eyebrow">내 아이디어로 바꾸기</p>
+        <h2 class="slide-title">같은 흐름을 내 아이디어에 적용한다</h2>
+      </div>
+      <div class="slide-content flow-grid">
+        <div class="step">
+          <span class="num">1</span>
+          <strong>주제 바꾸기</strong>
+          <span>오늘의 기록장을 운동 기록장, 여행 체크리스트 등으로 바꾼다.</span>
+        </div>
+        <div class="step">
+          <span class="num">2</span>
+          <strong>입력 바꾸기</strong>
+          <span>기록할 항목을 2~3개로 작게 정한다.</span>
+        </div>
+        <div class="step">
+          <span class="num">3</span>
+          <strong>문서 다시 만들기</strong>
+          <span>목적, 입력, 저장, 화면, 검증 기준을 다시 쓴다.</span>
+        </div>
+        <div class="step">
+          <span class="num">4</span>
+          <strong>다시 구현하기</strong>
+          <span>기준 문서를 AI에게 주고 변경을 요청한다.</span>
+        </div>
+      </div>
+      <div class="slide-footer"><span>흐름은 그대로, 소재만 바꾸기</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-header">
+        <p class="eyebrow">전체 복습</p>
+        <h2 class="slide-title">오늘 한 일</h2>
+      </div>
+      <div class="slide-content">
+        <ol class="timeline">
+          <li><strong>관점</strong><span>AI는 마법 지팡이가 아니라 작업 파트너에 가깝다.</span></li>
+          <li><strong>흐름</strong><span>기획, 설계와 문서화, 구현, 검증으로 작은 결과물을 다듬는다.</span></li>
+          <li><strong>프롬프트</strong><span>역할, 명확한 지시, 조건과 형식을 나누어 작성한다.</span></li>
+          <li><strong>실습</strong><span>오늘의 기록장 예제로 문서화, Supabase, 구현, 검증을 경험했다.</span></li>
+          <li><strong>대처</strong><span>부족한 결과와 에러를 다시 AI에게 전달하는 법을 익혔다.</span></li>
+        </ol>
+      </div>
+      <div class="slide-footer"><span>문서를 기준으로 만들고 문서를 기준으로 검증</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-header">
+        <p class="eyebrow">가져갈 문장</p>
+        <h2 class="slide-title">오늘의 핵심 문장</h2>
+      </div>
+      <div class="slide-content two-col">
+        <div class="panel teal">
+          <h3>작업 흐름</h3>
+          <pre>AI에게 요청한다.
+결과를 확인한다.
+다시 요청한다.</pre>
+        </div>
+        <div class="panel coral">
+          <h3>에러 대처</h3>
+          <pre>나는 코딩을 잘 몰라.
+원인을 쉽게 설명해주고,
+고친 전체 코드를 다시 줘.</pre>
+        </div>
+      </div>
+      <div class="slide-footer"><span>작게 묻고 다시 고치기</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-header">
+        <p class="eyebrow">Q&A</p>
+        <h2 class="slide-title">질문은 구체적이지 않아도 괜찮다</h2>
+      </div>
+      <div class="slide-content">
+        <ul class="check-grid">
+          <li>프롬프트에 역할을 꼭 넣어야 하나요?</li>
+          <li>Supabase 연결 정보는 어디에 넣어야 하나요?</li>
+          <li>저장 버튼을 눌렀는데 DB에 안 들어가면 어떻게 하나요?</li>
+          <li>새로고침하면 왜 화면에 안 보이나요?</li>
+          <li>에러 메시지가 영어로 나오면 어떻게 물어봐야 하나요?</li>
+          <li>오늘 만든 기록장을 제 아이디어로 바꾸려면 어디부터 바꾸나요?</li>
+        </ul>
+      </div>
+      <div class="slide-footer"><span>기초적인 질문일수록 좋다</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-header">
+        <p class="eyebrow">강의 후 과제</p>
+        <h2 class="slide-title">집에 가서 질문 하나만 던져보기</h2>
+      </div>
+      <div class="slide-content">
+        <pre>내가 오늘 배운 AI 실습 내용을 내 업무나 일상에 적용한다면,
+어떤 작은 일부터 시작할 수 있을까?</pre>
+        <div class="emphasis-box">
+          <p>그중 가장 쉬운 것 하나만 골라 다시 요청해보세요. 작게 묻고, 나온 결과를 보고, 다시 고쳐달라고 말하는 경험이 쌓이면 AI와 함께 일하는 감각이 생깁니다.</p>
+        </div>
+      </div>
+      <div class="slide-footer"><span>작은 일 하나부터</span></div>
+    </section>
+  </main>
+
+  <nav class="controls" aria-label="슬라이드 이동">
+    <button id="prevBtn" type="button" aria-label="이전 슬라이드">‹</button>
+    <span id="counter">1 / 1</span>
+    <button id="nextBtn" type="button" aria-label="다음 슬라이드">›</button>
+    <button id="printBtn" type="button" aria-label="인쇄">⎙</button>
+    <a href="prompts.html" target="_blank" rel="noopener">프롬프트</a>
+  </nav>
+
+  <script>
+    const slides = Array.from(document.querySelectorAll("main.deck:not(.legacy-deck) > .slide"));
+    const counter = document.getElementById("counter");
+    const progressBar = document.getElementById("progressBar");
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const printBtn = document.getElementById("printBtn");
+
+    function readInitialIndex() {
+      const match = window.location.hash.match(/slide-(\d+)/);
+      if (!match) return 0;
+      return Math.max(0, Math.min(slides.length - 1, Number(match[1]) - 1));
+    }
+
+    let current = readInitialIndex();
+
+    function showSlide(index) {
+      current = Math.max(0, Math.min(slides.length - 1, index));
+      slides.forEach((slide, slideIndex) => {
+        slide.classList.toggle("active", slideIndex === current);
+      });
+      counter.textContent = `${current + 1} / ${slides.length}`;
+      progressBar.style.transform = `scaleX(${(current + 1) / slides.length})`;
+      window.history.replaceState(null, "", `#slide-${current + 1}`);
+    }
+
+    function moveBy(delta) {
+      showSlide(current + delta);
+    }
+
+    prevBtn.addEventListener("click", () => moveBy(-1));
+    nextBtn.addEventListener("click", () => moveBy(1));
+    printBtn.addEventListener("click", () => window.print());
+
+    window.addEventListener("keydown", (event) => {
+      if (event.defaultPrevented) return;
+      if (["ArrowRight", "PageDown", " "].includes(event.key)) {
+        event.preventDefault();
+        moveBy(1);
+      }
+      if (["ArrowLeft", "PageUp"].includes(event.key)) {
+        event.preventDefault();
+        moveBy(-1);
+      }
+      if (event.key === "Home") {
+        event.preventDefault();
+        showSlide(0);
+      }
+      if (event.key === "End") {
+        event.preventDefault();
+        showSlide(slides.length - 1);
+      }
+    });
+
+    window.addEventListener("hashchange", () => showSlide(readInitialIndex()));
+    showSlide(current);
+  </script>
+</body>
+</html>
