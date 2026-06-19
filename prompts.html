@@ -1,284 +1,298 @@
 <!doctype html>
 <html lang="ko">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>실습 프롬프트 모음</title>
-  <style>
-    :root {
-      --bg: #eef7f5;
-      --paper: #ffffff;
-      --ink: #17201f;
-      --muted: #667371;
-      --line: #d8e4e1;
-      --teal: #008b84;
-      --teal-dark: #00645f;
-      --mint: #e7f6f3;
-      --mint-strong: #cfece7;
-      --coral: #c95f4b;
-      --amber: #b98517;
-      --blue: #3b6798;
-      --shadow: 0 16px 42px rgba(20, 44, 41, 0.10);
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    html,
-    body {
-      margin: 0;
-      min-height: 100%;
-      background: var(--bg);
-      color: var(--ink);
-      font-family: "Pretendard", "Noto Sans KR", "Malgun Gothic", Arial, sans-serif;
-    }
-
-    body {
-      padding: 42px 22px 64px;
-    }
-
-    main {
-      width: min(1080px, 100%);
-      margin: 0 auto;
-      display: grid;
-      gap: 24px;
-    }
-
-    header {
-      display: grid;
-      gap: 16px;
-      padding: 34px 36px;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background:
-        linear-gradient(115deg, rgba(0, 139, 132, 0.12), transparent 46%),
-        linear-gradient(180deg, rgba(255, 247, 223, 0.72), transparent 64%),
-        var(--paper);
-      box-shadow: var(--shadow);
-    }
-
-    h1,
-    h2,
-    p {
-      margin: 0;
-    }
-
-    h1 {
-      font-size: clamp(34px, 5vw, 54px);
-      line-height: 1.08;
-      letter-spacing: 0;
-    }
-
-    h2 {
-      font-size: clamp(22px, 3vw, 31px);
-      line-height: 1.22;
-      letter-spacing: 0;
-    }
-
-    p {
-      color: var(--muted);
-      font-size: 18px;
-      line-height: 1.58;
-    }
-
-    .eyebrow {
-      justify-self: start;
-      color: var(--teal);
-      font-size: 14px;
-      font-weight: 850;
-      line-height: 1;
-      background: var(--mint);
-      border: 1px solid var(--mint-strong);
-      border-radius: 999px;
-      padding: 8px 13px;
-    }
-
-    .prompt-card {
-      display: grid;
-      gap: 18px;
-      border: 1px solid var(--line);
-      border-top: 6px solid var(--teal);
-      border-radius: 8px;
-      padding: 26px;
-      background: var(--paper);
-      box-shadow: 0 8px 22px rgba(23, 32, 31, 0.04);
-    }
-
-    .prompt-card:nth-of-type(3n) {
-      border-top-color: var(--blue);
-    }
-
-    .prompt-card:nth-of-type(3n + 1) {
-      border-top-color: var(--coral);
-    }
-
-    .prompt-card:nth-of-type(3n + 2) {
-      border-top-color: var(--amber);
-    }
-
-    .card-head {
-      display: flex;
-      align-items: start;
-      justify-content: space-between;
-      gap: 18px;
-    }
-
-    button {
-      flex: 0 0 auto;
-      min-height: 40px;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      padding: 0 14px;
-      color: var(--ink);
-      background: var(--paper);
-      font-size: 14px;
-      font-weight: 850;
-      cursor: pointer;
-    }
-
-    button:hover {
-      border-color: var(--teal);
-      color: var(--teal);
-    }
-
-    pre {
-      margin: 0;
-      white-space: pre-wrap;
-      word-break: keep-all;
-      overflow-wrap: anywhere;
-      background: #13211f;
-      color: #f6fbfa;
-      border-left: 6px solid var(--teal);
-      border-radius: 8px;
-      padding: 20px 22px;
-      font-family: "D2Coding", Consolas, "Courier New", monospace;
-      font-size: 16px;
-      line-height: 1.58;
-    }
-
-    a {
-      color: var(--teal-dark);
-      font-weight: 850;
-      text-decoration: none;
-    }
-
-    a:hover {
-      text-decoration: underline;
-    }
-
-    @media (max-width: 720px) {
-      body {
-        padding: 22px 14px 42px;
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>실습 프롬프트 모음</title>
+    <style>
+      :root {
+        --bg: #eef7f5;
+        --paper: #ffffff;
+        --ink: #17201f;
+        --muted: #667371;
+        --line: #d8e4e1;
+        --teal: #008b84;
+        --teal-dark: #00645f;
+        --mint: #e7f6f3;
+        --mint-strong: #cfece7;
+        --coral: #c95f4b;
+        --amber: #b98517;
+        --blue: #3b6798;
+        --shadow: 0 16px 42px rgba(20, 44, 41, 0.1);
       }
 
-      header,
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        min-height: 100%;
+        background: var(--bg);
+        color: var(--ink);
+        font-family:
+          "Pretendard", "Noto Sans KR", "Malgun Gothic", Arial, sans-serif;
+      }
+
+      body {
+        padding: 42px 22px 64px;
+      }
+
+      main {
+        width: min(1080px, 100%);
+        margin: 0 auto;
+        display: grid;
+        gap: 24px;
+      }
+
+      header {
+        display: grid;
+        gap: 16px;
+        padding: 34px 36px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background:
+          linear-gradient(115deg, rgba(0, 139, 132, 0.12), transparent 46%),
+          linear-gradient(180deg, rgba(255, 247, 223, 0.72), transparent 64%),
+          var(--paper);
+        box-shadow: var(--shadow);
+      }
+
+      h1,
+      h2,
+      p {
+        margin: 0;
+      }
+
+      h1 {
+        font-size: clamp(34px, 5vw, 54px);
+        line-height: 1.08;
+        letter-spacing: 0;
+      }
+
+      h2 {
+        font-size: clamp(22px, 3vw, 31px);
+        line-height: 1.22;
+        letter-spacing: 0;
+      }
+
+      p {
+        color: var(--muted);
+        font-size: 18px;
+        line-height: 1.58;
+      }
+
+      .eyebrow {
+        justify-self: start;
+        color: var(--teal);
+        font-size: 14px;
+        font-weight: 850;
+        line-height: 1;
+        background: var(--mint);
+        border: 1px solid var(--mint-strong);
+        border-radius: 999px;
+        padding: 8px 13px;
+      }
+
       .prompt-card {
-        padding: 22px;
+        display: grid;
+        gap: 18px;
+        border: 1px solid var(--line);
+        border-top: 6px solid var(--teal);
+        border-radius: 8px;
+        padding: 26px;
+        background: var(--paper);
+        box-shadow: 0 8px 22px rgba(23, 32, 31, 0.04);
+      }
+
+      .prompt-card:nth-of-type(3n) {
+        border-top-color: var(--blue);
+      }
+
+      .prompt-card:nth-of-type(3n + 1) {
+        border-top-color: var(--coral);
+      }
+
+      .prompt-card:nth-of-type(3n + 2) {
+        border-top-color: var(--amber);
       }
 
       .card-head {
-        display: grid;
+        display: flex;
+        align-items: start;
+        justify-content: space-between;
+        gap: 18px;
       }
-    }
-  </style>
-</head>
-<body>
-  <main>
-    <header>
-      <p class="eyebrow">AI 초급자 실습</p>
-      <h1>실습 프롬프트 모음</h1>
-      <p>발표 슬라이드에는 요약만 남기고, 수강생이 복사해서 쓸 긴 프롬프트를 이곳에 모았습니다. 필요한 부분의 대괄호를 자신의 내용으로 바꿔 사용합니다.</p>
-      <p><a href="index.html">발표 슬라이드로 돌아가기</a></p>
-    </header>
 
-    <section class="prompt-card">
-      <div class="card-head">
-        <div>
-          <p class="eyebrow">1</p>
-          <h2>기획 문서 요청 프롬프트</h2>
+      button {
+        flex: 0 0 auto;
+        min-height: 40px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 0 14px;
+        color: var(--ink);
+        background: var(--paper);
+        font-size: 14px;
+        font-weight: 850;
+        cursor: pointer;
+      }
+
+      button:hover {
+        border-color: var(--teal);
+        color: var(--teal);
+      }
+
+      pre {
+        margin: 0;
+        white-space: pre-wrap;
+        word-break: keep-all;
+        overflow-wrap: anywhere;
+        background: #13211f;
+        color: #f6fbfa;
+        border-left: 6px solid var(--teal);
+        border-radius: 8px;
+        padding: 20px 22px;
+        font-family: "D2Coding", Consolas, "Courier New", monospace;
+        font-size: 16px;
+        line-height: 1.58;
+      }
+
+      a {
+        color: var(--teal-dark);
+        font-weight: 850;
+        text-decoration: none;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+
+      @media (max-width: 720px) {
+        body {
+          padding: 22px 14px 42px;
+        }
+
+        header,
+        .prompt-card {
+          padding: 22px;
+        }
+
+        .card-head {
+          display: grid;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header>
+        <p class="eyebrow">AI 초급자 실습</p>
+        <h1>실습 프롬프트 모음</h1>
+        <p>
+          발표 슬라이드에는 요약만 남기고, 수강생이 복사해서 쓸 긴 프롬프트를
+          이곳에 모았습니다. 필요한 부분의 대괄호를 자신의 내용으로 바꿔
+          사용합니다.
+        </p>
+        <p><a href="index.html">발표 슬라이드로 돌아가기</a></p>
+      </header>
+
+      <section class="prompt-card">
+        <div class="card-head">
+          <div>
+            <p class="eyebrow">1</p>
+            <h2>기획 문서 요청 프롬프트</h2>
+          </div>
+          <button type="button" data-copy>복사</button>
         </div>
-        <button type="button" data-copy>복사</button>
-      </div>
-      <pre>오늘의 기록장 웹페이지를 만들기 위한 짧은 기획 문서를 만들어줘.
+        <pre>
+데일리 노트 웹페이지를 만들기 위한 짧은 기획 문서를 만들어줘.
 
 목표:
 사용자가 오늘의 기록을 남기고 저장한 기록을 다시 확인할 수 있는 웹페이지를 만들고 싶어.
+저장한 기록은 수정하거나 삭제할 수 있어야 하고, 키워드로 검색할 수도 있어야 해.
 저장한 내용은 Supabase DB에도 저장되게 할 거야.
 
 문서에 포함할 내용:
 - 이 웹페이지의 목적
 - 사용자가 입력해야 할 정보
 - 저장 버튼을 눌렀을 때의 동작
+- 저장된 기록을 수정하고 삭제하는 동작
+- 키워드로 기록을 검색하는 동작
 - Supabase에 저장되어야 할 데이터
 - 화면에서 확인해야 할 결과
 - 완성 후 검증 체크리스트
 
-초보자도 이해할 수 있게 짧고 명확하게 정리해줘.</pre>
-    </section>
+문서를 저장할 때는 docs 폴더 안에 기능별 설명 문서를 따로 나누어 저장해줘.
+그리고 전체 내용을 한눈에 볼 수 있는 메인 문서도 함께 만들고, 그 메인 문서에서 각 기능별 설명 문서를 링크로 참조할 수 있게 정리해줘.
+파일 이름은 기능명으로 해줘.</pre
+        >
+      </section>
 
-    <section class="prompt-card">
-      <div class="card-head">
-        <div>
-          <p class="eyebrow">2</p>
-          <h2>Supabase SQL 요청 프롬프트</h2>
+      <section class="prompt-card">
+        <div class="card-head">
+          <div>
+            <p class="eyebrow">2</p>
+            <h2>Supabase SQL 요청 프롬프트</h2>
+          </div>
+          <button type="button" data-copy>복사</button>
         </div>
-        <button type="button" data-copy>복사</button>
-      </div>
-      <pre>아래 기획 문서를 보고 Supabase SQL Editor에서 실행할 SQL을 만들어줘.
+        <pre>
+docs 폴더에 저장된 문서를 보고 Supabase SQL Editor에서 실행할 SQL을 만들어줘.
 
 요청:
 - 필요한 테이블 이름과 컬럼을 스스로 판단해줘.
 - SQL Editor에 바로 붙여넣어 실행할 수 있는 전체 SQL을 줘.
-- Row Level Security를 켜고, 초보자 실습용으로 select와 insert가 가능하도록 policy를 포함해줘.
+- Row Level Security를 켜고, 초보자 실습용으로 select, insert, update, delete가 가능하도록 policy를 포함해줘.
 - 같은 policy가 이미 있어도 다시 실행할 수 있게 drop policy if exists를 포함해줘.
-- 설명은 짧게 하고, 실행할 SQL은 코드블록으로 줘.
+- 설명은 짧게 하고, 실행할 SQL은 docs 폴더 안에 저장해줘.
+</pre
+        >
+      </section>
 
-기획 문서:
-[기획 문서 붙여넣기]</pre>
-    </section>
-
-    <section class="prompt-card">
-      <div class="card-head">
-        <div>
-          <p class="eyebrow">3</p>
-          <h2>구현 요청 프롬프트</h2>
+      <section class="prompt-card">
+        <div class="card-head">
+          <div>
+            <p class="eyebrow">3</p>
+            <h2>구현 요청 프롬프트</h2>
+          </div>
+          <button type="button" data-copy>복사</button>
         </div>
-        <button type="button" data-copy>복사</button>
-      </div>
-      <pre>아래 기획 문서와 Supabase SQL을 기준으로 웹페이지를 만들어줘.
+        <pre>
+docs에 저장된 문서들을 기준으로 웹페이지를 만들어줘.
 
 요청:
 - 사용자가 기록을 입력하고 저장할 수 있게 해줘.
 - 저장 버튼을 누르면 Supabase에 저장되게 해줘.
+- 저장된 기록을 수정하고 삭제할 수 있게 해줘.
+- 키워드로 기록을 검색할 수 있게 해줘.
 - 페이지를 처음 열 때 Supabase에서 저장된 기록을 불러와 보여줘.
 - Supabase Project URL과 anon public key를 넣는 위치를 표시해줘.
 - service_role key는 절대 사용하지 않게 해줘.
 - 초보자가 따라 할 수 있게 필요한 파일, 설치 방법, 실행 방법을 순서대로 알려줘.
 - 최종 코드는 생략하지 말고 전체를 줘.
+</pre
+        >
+      </section>
 
-기획 문서:
-[기획 문서 붙여넣기]
-
-Supabase SQL:
-[SQL 붙여넣기]</pre>
-    </section>
-
-    <section class="prompt-card">
-      <div class="card-head">
-        <div>
-          <p class="eyebrow">4</p>
-          <h2>검증 체크리스트 요청 프롬프트</h2>
+      <section class="prompt-card">
+        <div class="card-head">
+          <div>
+            <p class="eyebrow">4</p>
+            <h2>검증 체크리스트 요청 프롬프트</h2>
+          </div>
+          <button type="button" data-copy>복사</button>
         </div>
-        <button type="button" data-copy>복사</button>
-      </div>
-      <pre>아래 기획 문서와 현재 결과물을 기준으로
+        <pre>
+docs에 저장된 문서와 현재 결과물을 기준으로
 초보자가 확인할 수 있는 검증 체크리스트를 만들어줘.
 
 확인하고 싶은 것:
 - 화면이 기획 문서와 맞는지
 - 저장 버튼이 작동하는지
 - Supabase DB에 데이터가 저장되는지
+- 저장된 기록을 수정하고 삭제할 수 있는지
+- 키워드로 기록을 검색할 수 있는지
 - 새로고침 후 기록이 다시 보이는지
 - 빈 입력값일 때 안내가 나오는지
 - 모바일 화면에서 깨지지 않는지
@@ -287,18 +301,20 @@ Supabase SQL:
 [기획 문서 붙여넣기]
 
 현재 구현 내용:
-[현재 파일 구조나 코드 붙여넣기]</pre>
-    </section>
+[현재 파일 구조나 코드 붙여넣기]</pre
+        >
+      </section>
 
-    <section class="prompt-card">
-      <div class="card-head">
-        <div>
-          <p class="eyebrow">5</p>
-          <h2>에러 해결 요청 프롬프트</h2>
+      <section class="prompt-card">
+        <div class="card-head">
+          <div>
+            <p class="eyebrow">5</p>
+            <h2>에러 해결 요청 프롬프트</h2>
+          </div>
+          <button type="button" data-copy>복사</button>
         </div>
-        <button type="button" data-copy>복사</button>
-      </div>
-      <pre>아래 에러가 나왔어. 나는 코딩을 잘 몰라.
+        <pre>
+아래 에러가 나왔어.
 원인을 쉽게 설명해주고, 고친 전체 코드를 다시 줘.
 
 현재 상황:
@@ -308,18 +324,20 @@ Supabase SQL:
 [에러 메시지 붙여넣기]
 
 원하는 결과:
-[어떻게 작동해야 하는지 적기]</pre>
-    </section>
+[어떻게 작동해야 하는지 적기]</pre
+        >
+      </section>
 
-    <section class="prompt-card">
-      <div class="card-head">
-        <div>
-          <p class="eyebrow">6</p>
-          <h2>내 아이디어로 바꾸기 프롬프트</h2>
+      <section class="prompt-card">
+        <div class="card-head">
+          <div>
+            <p class="eyebrow">6</p>
+            <h2>내 아이디어로 바꾸기 프롬프트</h2>
+          </div>
+          <button type="button" data-copy>복사</button>
         </div>
-        <button type="button" data-copy>복사</button>
-      </div>
-      <pre>오늘 만든 오늘의 기록장 흐름을 아래 아이디어에 맞게 바꾸고 싶어.
+        <pre>
+오늘 만든 데일리 노트 흐름을 아래 아이디어에 맞게 바꾸고 싶어.
 
 새 아이디어:
 [예: 독서 기록장 / 운동 루틴 기록 / 상품 아이디어 메모장 / 고객 상담 메모장]
@@ -327,29 +345,30 @@ Supabase SQL:
 바꾸고 싶은 내용:
 - 기록할 입력 항목: [2~3개만 적기]
 - 저장 후 화면에 보여줄 내용: [목록에 보이면 좋을 내용 적기]
-- 제외할 기능: 로그인, 검색, 통계, 관리자 기능
+- 제외할 기능: 로그인, 통계, 관리자 기능
 
 요청:
 1. 이 아이디어에 맞는 짧은 기획 문서를 다시 만들어줘.
 2. 필요한 Supabase 테이블 구조를 제안해줘.
 3. 기존 웹페이지 코드에서 바꿔야 할 부분을 초보자 기준으로 설명해줘.
-4. 가능하면 고친 전체 코드를 다시 줘.</pre>
-    </section>
-  </main>
+4. 가능하면 고친 전체 코드를 다시 줘.</pre
+        >
+      </section>
+    </main>
 
-  <script>
-    document.querySelectorAll("[data-copy]").forEach((button) => {
-      button.addEventListener("click", async () => {
-        const card = button.closest(".prompt-card");
-        const text = card.querySelector("pre").innerText;
-        await navigator.clipboard.writeText(text);
-        const original = button.textContent;
-        button.textContent = "복사됨";
-        window.setTimeout(() => {
-          button.textContent = original;
-        }, 1200);
+    <script>
+      document.querySelectorAll("[data-copy]").forEach((button) => {
+        button.addEventListener("click", async () => {
+          const card = button.closest(".prompt-card");
+          const text = card.querySelector("pre").innerText;
+          await navigator.clipboard.writeText(text);
+          const original = button.textContent;
+          button.textContent = "복사됨";
+          window.setTimeout(() => {
+            button.textContent = original;
+          }, 1200);
+        });
       });
-    });
-  </script>
-</body>
+    </script>
+  </body>
 </html>

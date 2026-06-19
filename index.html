@@ -195,9 +195,10 @@
       }
 
       .meta {
-        display: flex;
-        flex-wrap: wrap;
+        display: grid;
+        grid-template-columns: repeat(4, max-content);
         gap: 12px;
+        justify-content: start;
       }
 
       .tag {
@@ -211,6 +212,11 @@
         background: rgba(255, 255, 255, 0.76);
         font-size: 16px;
         font-weight: 800;
+      }
+
+      .meta-link {
+        grid-column: 1 / -1;
+        justify-self: start;
       }
 
       .body {
@@ -302,6 +308,48 @@
       .mini {
         color: var(--muted);
         font-size: clamp(16px, 1.72vh, 20px);
+      }
+
+      .tool-links {
+        display: grid;
+        gap: 10px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .tool-links li,
+      .tool-links li + li {
+        margin: 0;
+      }
+
+      .tool-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        width: max-content;
+        max-width: 100%;
+        color: var(--ink);
+        text-decoration: none;
+        font-weight: 800;
+        line-height: 1.2;
+        white-space: nowrap;
+      }
+
+      .tool-link:hover .tool-name,
+      .tool-link:focus-visible .tool-name {
+        text-decoration: underline;
+        text-underline-offset: 4px;
+      }
+
+      .tool-icon {
+        width: 28px;
+        height: 28px;
+        flex: 0 0 28px;
+        object-fit: contain;
+        border: 1px solid var(--line);
+        border-radius: 7px;
+        background: #ffffff;
       }
 
       .flow {
@@ -430,6 +478,21 @@
         border-radius: 8px;
         padding: 20px 22px;
         margin-top: 16px;
+      }
+
+      .perspective-line {
+        max-width: 980px;
+        margin-top: 16px;
+        padding: 13px 18px;
+        border: 1px solid var(--mint-strong);
+        border-left: 7px solid var(--teal);
+        border-radius: 8px;
+        background: rgba(0, 139, 132, 0.07);
+        color: var(--ink);
+        font-size: clamp(17px, 1.8vh, 21px);
+        font-weight: 700;
+        line-height: 1.35;
+        white-space: nowrap;
       }
 
       .callout p,
@@ -643,6 +706,31 @@
         font-size: 14px;
       }
 
+      .next-steps-slide .flow-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 30px;
+      }
+
+      .next-steps-slide .step {
+        min-height: 230px;
+        padding: 34px;
+      }
+
+      .next-steps-slide .step strong {
+        font-size: clamp(28px, 3vh, 38px);
+      }
+
+      .next-steps-slide .step span:not(.num) {
+        font-size: clamp(20px, 2.15vh, 26px);
+        line-height: 1.45;
+      }
+
+      .next-steps-slide .step .num {
+        width: 38px;
+        height: 38px;
+        font-size: 17px;
+      }
+
       .compare,
       .compare-grid {
         display: grid;
@@ -747,6 +835,22 @@
         line-height: 1.42;
       }
 
+      .qna-slide.active {
+        grid-template-rows: 1fr;
+        place-items: center;
+      }
+
+      .qna-slide .slide-header {
+        max-width: none;
+        justify-items: center;
+        text-align: center;
+      }
+
+      .qna-slide .slide-title {
+        font-size: clamp(64px, 8.6vh, 104px);
+        line-height: 1.08;
+      }
+
       .slide-footer {
         justify-self: end;
         align-self: end;
@@ -762,6 +866,57 @@
 
       .slide-footer span {
         display: block;
+      }
+
+      .supabase-slide .slide-content {
+        margin-top: 34px;
+      }
+
+      .supabase-slide .panel {
+        padding: 22px 26px;
+      }
+
+      .supabase-slide .panel p,
+      .supabase-slide .panel li {
+        font-size: clamp(16px, 1.68vh, 19px);
+        line-height: 1.42;
+      }
+
+      .supabase-slide .panel > * + *,
+      .supabase-slide .panel h3 + ul {
+        margin-top: 12px;
+      }
+
+      .supabase-slide .mini {
+        font-size: clamp(14px, 1.45vh, 17px);
+        line-height: 1.34;
+        overflow-wrap: anywhere;
+      }
+
+      .doc-refine-slide .slide-content {
+        margin-top: 32px;
+      }
+
+      .doc-refine-slide .panel {
+        padding: 22px 24px;
+      }
+
+      .doc-refine-slide .panel p,
+      .doc-refine-slide .panel li {
+        font-size: clamp(16px, 1.7vh, 20px);
+        line-height: 1.42;
+      }
+
+      .doc-refine-slide .panel > * + *,
+      .doc-refine-slide .panel h3 + ul,
+      .doc-refine-slide .panel h3 + p {
+        margin-top: 12px;
+      }
+
+      .doc-refine-slide pre {
+        padding: 14px 16px;
+        font-size: clamp(13px, 1.38vh, 16px);
+        line-height: 1.42;
       }
 
       .progress {
@@ -895,6 +1050,16 @@
           font-size: 21px;
         }
 
+        .meta {
+          grid-template-columns: 1fr;
+        }
+
+        .meta-link {
+          grid-column: 1;
+          max-width: 100%;
+          overflow-wrap: anywhere;
+        }
+
         .two-col,
         .three-col,
         .compare,
@@ -973,23 +1138,21 @@
           </h1>
           <p class="slide-subtitle">
             완벽한 이해보다 중요한 것은 작게 요청하고, 화면을 보고, 다시
-            고쳐달라고 말하는 감각입니다.
+            고쳐달라고 말하는 감각
           </p>
         </div>
         <div class="slide-content">
           <div class="meta">
-            <span class="tag">AI와 작은 결과물 만들기</span>
-            <span class="tag">2026.06.20</span>
             <span class="tag">안영근</span>
             <span class="tag">소프트웨어 개발자</span>
+            <span class="tag">AI와 작은 결과물 만들기</span>
             <a
-              class="tag"
+              class="tag meta-link"
               href="https://youngkeunahn.github.io/presentation/"
               target="_blank"
               rel="noopener"
               >youngkeunahn.github.io/presentation</a
             >
-            <span class="tag">요청 → 확인 → 다시 요청</span>
           </div>
         </div>
         <div class="slide-footer">
@@ -1066,41 +1229,15 @@
             AI는 대신 완성해주는 존재가 아니라, 함께 정리하고 고쳐가는
             도구입니다.
           </div>
+          <div class="perspective-line">
+            상황 설명 → 원하는 결과 → 결과 확인 → 부족한 부분 다시 요청
+          </div>
           <div class="callout">
             <p>좋은 질문보다 중요한 것은 결과를 보고 다시 묻는 힘입니다.</p>
           </div>
         </div>
         <div class="slide-footer">
           <span>처음부터 완벽한 답을 기대하지 않습니다.</span>
-        </div>
-      </section>
-
-      <section class="slide">
-        <div class="slide-header">
-          <p class="eyebrow">1부 · 막막함</p>
-          <h2 class="slide-title">막막함은 능력 부족이 아니라 낯섦에서 온다</h2>
-        </div>
-        <div class="slide-content compare-grid">
-          <div class="panel bad">
-            <h3>자주 드는 생각</h3>
-            <ul>
-              <li>무엇을 물어봐야 할지 모르겠다</li>
-              <li>내가 너무 몰라서 못 쓸 것 같다</li>
-              <li>이상한 답이 나오면 어떻게 해야 할지 모르겠다</li>
-            </ul>
-          </div>
-          <div class="panel good">
-            <h3>오늘의 관점</h3>
-            <ul>
-              <li>상황을 설명한다</li>
-              <li>원하는 결과를 말한다</li>
-              <li>나온 결과를 확인한다</li>
-              <li>부족한 부분을 다시 요청한다</li>
-            </ul>
-          </div>
-        </div>
-        <div class="slide-footer">
-          <span>막막함은 작게 쪼개면 다룰 수 있습니다.</span>
         </div>
       </section>
 
@@ -1115,12 +1252,88 @@
             <p>
               생각 정리, 요구사항 정리, 코드 작성, 수정 방향 제안을 맡깁니다.
             </p>
-            <p class="mini">예: Claude, Codex, Antigravity</p>
+            <ul class="tool-links" aria-label="AI 작업자 예시">
+              <li>
+                <a
+                  class="tool-link"
+                  href="https://claude.ai/"
+                  target="_blank"
+                  rel="noopener"
+                >
+                  <img class="tool-icon" src="icons/claude-icon.png" alt="" />
+                  <span class="tool-name">Claude</span>
+                </a>
+              </li>
+              <li>
+                <a
+                  class="tool-link"
+                  href="https://openai.com/codex/"
+                  target="_blank"
+                  rel="noopener"
+                >
+                  <img class="tool-icon" src="icons/codex-color.svg" alt="" />
+                  <span class="tool-name">Codex</span>
+                </a>
+              </li>
+              <li>
+                <a
+                  class="tool-link"
+                  href="https://antigravity.google/"
+                  target="_blank"
+                  rel="noopener"
+                >
+                  <img
+                    class="tool-icon"
+                    src="icons/antigravity-icon.jpg"
+                    alt=""
+                  />
+                  <span class="tool-name">Antigravity</span>
+                </a>
+              </li>
+            </ul>
           </div>
           <div class="panel blue">
             <h3>코드 작업 공간</h3>
             <p>파일을 보고, 코드를 만들고, 실행 결과를 확인하는 장소입니다.</p>
-            <p class="mini">예: VS Code, Cursor, Antigravity IDE</p>
+            <ul class="tool-links" aria-label="코드 작업 공간 예시">
+              <li>
+                <a
+                  class="tool-link"
+                  href="https://code.visualstudio.com/"
+                  target="_blank"
+                  rel="noopener"
+                >
+                  <img class="tool-icon" src="icons/vscode-icon.png" alt="" />
+                  <span class="tool-name">VS Code</span>
+                </a>
+              </li>
+              <li>
+                <a
+                  class="tool-link"
+                  href="https://cursor.com/"
+                  target="_blank"
+                  rel="noopener"
+                >
+                  <img class="tool-icon" src="icons/cursor-icon.png" alt="" />
+                  <span class="tool-name">Cursor</span>
+                </a>
+              </li>
+              <li>
+                <a
+                  class="tool-link"
+                  href="https://antigravity.google/"
+                  target="_blank"
+                  rel="noopener"
+                >
+                  <img
+                    class="tool-icon"
+                    src="icons/antigravity-icon.jpg"
+                    alt=""
+                  />
+                  <span class="tool-name">Antigravity IDE</span>
+                </a>
+              </li>
+            </ul>
           </div>
         </div>
         <div class="slide-footer">
@@ -1208,14 +1421,17 @@
         <div class="slide-content compare-grid">
           <div class="panel bad">
             <h3>아쉬운 요청</h3>
-            <pre>기록장 만들어줘.</pre>
+            <pre>노트 만들어줘.</pre>
           </div>
           <div class="panel good">
             <h3>좋은 요청</h3>
             <pre>
-초보자가 오늘의 기록을 남기고,
-저장된 기록을 다시 볼 수 있는 화면을 만들고 싶어.
-먼저 필요한 기능 5가지만 정리해줘.</pre
+데일리 노트 웹페이지를 만들려고 해.
+사용자가 날짜, 제목, 내용을 입력하고,
+저장한 기록을 다시 볼 수 있는 화면이 필요해.
+
+초보자가 실습으로 만들 수 있도록
+필요한 핵심 기능 5가지를 표로 정리해줘.</pre
             >
           </div>
         </div>
@@ -1236,15 +1452,17 @@
         <div class="slide-content three-col">
           <div class="panel teal">
             <h3>초보자 기준</h3>
-            <p>처음 보는 사람도 이해할 수 있게 설명해줘.</p>
+            <p>초보자 기준으로 쉽게 설명해줘.</p>
           </div>
           <div class="panel amber">
             <h3>서비스 기획자 관점</h3>
-            <p>사용자의 행동과 화면 흐름 중심으로 봐줘.</p>
+            <p>
+              가능하면 서비스 기획자 관점에서 기능의 우선순위도 함께 정리해줘.
+            </p>
           </div>
           <div class="panel blue">
             <h3>개발자 기준</h3>
-            <p>바로 구현할 수 있게 항목을 정리해줘.</p>
+            <p>개발자가 바로 화면을 만들 수 있게 항목을 정리해줘.</p>
           </div>
         </div>
         <div class="slide-footer">
@@ -1329,7 +1547,7 @@
         <div class="slide-header">
           <p class="eyebrow">3부 · 바이브코딩</p>
           <h2 class="slide-title">
-            바이브코딩은 요청하고 확인하며 작은 결과물을 만드는 경험
+            요청하고 확인하며 작은 결과물을 만드는 경험
           </h2>
         </div>
         <div class="slide-content">
@@ -1346,7 +1564,7 @@
       <section class="slide">
         <div class="slide-header">
           <p class="eyebrow">3부 · 공통 예제</p>
-          <h2 class="slide-title">공통 예제: 오늘의 기록장</h2>
+          <h2 class="slide-title">공통 예제: 데일리 노트</h2>
           <p class="slide-subtitle">
             입력하고, 저장하고, 다시 확인하는 작은 웹페이지입니다.
           </p>
@@ -1358,6 +1576,8 @@
               <li>오늘의 기록 입력</li>
               <li>저장 버튼</li>
               <li>저장된 기록 목록</li>
+              <li>기록 수정과 삭제</li>
+              <li>키워드 검색</li>
               <li>Supabase DB 저장</li>
               <li>새로고침 후 다시 불러오기</li>
             </ul>
@@ -1366,7 +1586,7 @@
             <h3>이번에는 제외</h3>
             <ul>
               <li>로그인</li>
-              <li>검색과 통계</li>
+              <li>통계</li>
               <li>관리자 기능</li>
               <li>복잡한 권한 관리</li>
             </ul>
@@ -1380,28 +1600,28 @@
       <section class="slide">
         <div class="slide-header">
           <p class="eyebrow">3부 · 순서</p>
-          <h2 class="slide-title">오늘의 기록장을 만드는 순서</h2>
+          <h2 class="slide-title">데일리 노트을 만드는 순서</h2>
         </div>
         <div class="slide-content flow-grid">
           <div class="step">
             <span class="num">1</span>
-            <strong>기획 문서</strong>
-            <span>목적, 입력, 저장, 화면, 검증 기준을 정리합니다.</span>
+            <strong>기획</strong>
+            <span>오늘 만들 것을 작게 정합니다.</span>
           </div>
           <div class="step">
             <span class="num">2</span>
-            <strong>Supabase 테이블</strong>
-            <span>AI가 만든 SQL을 실행하고 테이블을 확인합니다.</span>
+            <strong>문서화</strong>
+            <span>AI에게 짧은 기획 문서를 만들게 합니다.</span>
           </div>
           <div class="step">
             <span class="num">3</span>
-            <strong>웹페이지 구현</strong>
-            <span>기획 문서와 SQL을 기준으로 요청합니다.</span>
+            <strong>구현</strong>
+            <span>문서와 SQL을 기준으로 AI가 구현 방식을 정합니다.</span>
           </div>
           <div class="step">
             <span class="num">4</span>
-            <strong>저장과 불러오기</strong>
-            <span>화면, DB, 새로고침 결과를 확인합니다.</span>
+            <strong>검증</strong>
+            <span>문서, 화면, DB, 새로고침을 확인합니다.</span>
           </div>
         </div>
         <div class="slide-footer">
@@ -1416,14 +1636,96 @@
         </div>
         <div class="slide-content">
           <pre>
-오늘의 기록장 웹페이지를 만들기 위한 짧은 기획 문서를 만들어줘.
-목적, 입력 항목, 저장 동작, 화면 결과, 검증 체크리스트를 포함해줘.</pre
+데일리 노트 웹페이지를 만들기 위한 짧은 기획 문서를 만들어줘.
+목적, 입력 항목, 저장 동작, 수정·삭제, 검색, 화면 결과, 검증 체크리스트를 포함해줘.</pre
           >
           <div class="callout">
             <p>자세한 프롬프트는 실습 프롬프트 모음에서 복사합니다.</p>
           </div>
         </div>
         <div class="slide-footer"><span>먼저 기준 문서를 만듭니다.</span></div>
+      </section>
+
+      <section class="slide doc-refine-slide">
+        <div class="slide-header">
+          <p class="eyebrow">3부 · 문서 점검</p>
+          <h2 class="slide-title">AI가 만든 문서는 먼저 확인하고 다듬는다</h2>
+        </div>
+        <div class="slide-content two-col">
+          <div class="panel teal">
+            <h3>먼저 확인할 질문</h3>
+            <ul>
+              <li>이 웹페이지의 목적과 일치하는가?</li>
+              <li>사용자가 입력할 정보가 너무 많지는 않나?</li>
+              <li>저장 버튼을 눌렀을 때의 동작이 이해되나?</li>
+              <li>Supabase에 저장될 데이터가 데일리 노트에 어울리나?</li>
+              <li>검증 체크리스트가 실제로 확인할 수 있는 내용인가?</li>
+            </ul>
+          </div>
+          <div class="panel amber">
+            <h3>다시 요청할 문장</h3>
+            <p class="mini">너무 복잡할 때</p>
+            <pre>
+초급자 실습용으로 너무 복잡해.
+로그인, 통계 기능은 빼고 오늘의 기록을 저장하고 다시 보고, 수정·삭제·검색하는 핵심 기능만 남겨줘.
+기획 문서를 다시 짧게 정리해줘.</pre
+            >
+            <p class="mini">너무 추상적일 때</p>
+            <pre>
+문서가 조금 추상적이야.
+사용자가 실제로 어떤 정보를 입력해야 하는지, 저장 후 화면에 무엇이 보여야 하는지 더 구체적으로 정리해줘.</pre
+            >
+          </div>
+        </div>
+        <div class="slide-footer">
+          <span>문서가 선명하면 AI가 만드는 결과도 선명해집니다.</span>
+        </div>
+      </section>
+
+      <section class="slide supabase-slide">
+        <div class="slide-header">
+          <p class="eyebrow">3부 · Supabase 소개</p>
+          <h2 class="slide-title">Supabase는 내 웹페이지의 온라인 저장소</h2>
+        </div>
+        <div class="slide-content two-col">
+          <div class="panel teal">
+            <h3>Supabase가 해주는 일</h3>
+            <ul>
+              <li>엑셀 표 같은 테이블에 기록을 한 줄씩 저장</li>
+              <li>저장·조회·수정·삭제·검색을 자동 처리</li>
+              <li>브라우저에서 바로 호출할 수 있는 API 제공</li>
+              <li>새로고침해도 데이터가 사라지지 않음</li>
+            </ul>
+          </div>
+          <div class="panel blue">
+            <h3>오늘 다루는 키 두 가지</h3>
+            <ul>
+              <li><strong>Project URL</strong> — 내 프로젝트 주소</li>
+              <li>
+                <strong>anon public key</strong> — 브라우저용 공개 키, 코드에서
+                사용
+              </li>
+              <li>
+                <strong>service_role key</strong> — 관리자 권한 키, 코드에 절대
+                넣지 않음
+              </li>
+            </ul>
+            <p class="mini">
+              <a
+                href="https://supabase.com/dashboard/project/_/settings/api-keys"
+                target="_blank"
+                rel="noopener"
+                >API KEY 확인하기</a
+              >
+            </p>
+          </div>
+        </div>
+        <div class="slide-footer">
+          <span
+            >새로고침 후에도 기록이 남는 이유는 Supabase에 저장되기
+            때문입니다.</span
+          >
+        </div>
       </section>
 
       <section class="slide">
@@ -1434,10 +1736,27 @@
         <div class="slide-content">
           <pre>
 이 기획 문서와 Supabase SQL을 기준으로 웹페이지를 만들어줘.
-저장, 불러오기, 실행 방법, 전체 코드를 포함해줘.</pre
+저장, 불러오기, 수정·삭제, 검색, 실행 방법, 전체 코드를 포함해줘.</pre
           >
+          <div class="three-col">
+            <div class="panel blue">
+              <h3>Auto 모드</h3>
+              <p>AI가 바로 파일을 보고 수정하며 작업을 진행합니다.</p>
+            </div>
+            <div class="panel amber">
+              <h3>Plan 모드</h3>
+              <p>먼저 구현 순서와 확인 방법을 계획으로 정리합니다.</p>
+            </div>
+            <div class="panel green">
+              <h3>오늘 방식</h3>
+              <p>Plan 모드로 계획을 확인한 뒤 진행합니다.</p>
+            </div>
+          </div>
           <div class="callout">
-            <p>기준 문서를 함께 주면 AI의 답변이 더 선명해집니다.</p>
+            <p>
+              계획이 어렵거나 복잡하면 구현 전에 더 단순하게 바꿔달라고
+              요청합니다.
+            </p>
           </div>
         </div>
         <div class="slide-footer">
@@ -1455,6 +1774,8 @@
             <li>문서와 화면이 같은가?</li>
             <li>저장 버튼이 동작하는가?</li>
             <li>Supabase DB에 들어갔는가?</li>
+            <li>기록을 수정·삭제할 수 있는가?</li>
+            <li>키워드 검색이 되는가?</li>
             <li>새로고침 후 다시 보이는가?</li>
             <li>빈 입력값일 때 안내가 나오는가?</li>
             <li>화면이 너무 복잡하지 않은가?</li>
@@ -1472,8 +1793,11 @@
         </div>
         <div class="slide-content">
           <pre>
-나는 코딩을 잘 몰라.
-원인을 쉽게 설명해주고, 고친 전체 코드를 다시 줘.</pre
+아래 에러가 떴어.
+원인을 쉽게 설명해주고, 고친 전체 코드를 다시 줘.
+
+에러 메시지:
+Uncaught SyntaxError: Unexpected token</pre
           >
           <div class="three-col">
             <div class="panel teal">
@@ -1497,6 +1821,97 @@
 
       <section class="slide">
         <div class="slide-header">
+          <p class="eyebrow">3부 · 환경변수와 보안</p>
+          <h2 class="slide-title">
+            API 키는 .env에 넣고, Git에는 올리지 않는다
+          </h2>
+          <p class="slide-subtitle">
+            코드와 비밀 정보를 분리하는 것이 안전한 개발의 첫걸음입니다.
+          </p>
+        </div>
+        <div class="slide-content two-col">
+          <div class="panel coral">
+            <h3>왜 키를 코드에 그대로 쓰면 안 되는가</h3>
+            <ul>
+              <li>GitHub에 올라가면 누구나 그대로 볼 수 있다</li>
+              <li>봇이 공개 저장소의 키를 자동으로 수집해 악용한다</li>
+              <li>내 Supabase에 침입해 데이터가 삭제·변조될 수 있다</li>
+              <li>요금이 부과되는 서비스라면 요금 폭탄으로 이어진다</li>
+              <li>커밋 기록은 지워도 남아 키를 회수해도 늦은 경우가 많다</li>
+            </ul>
+          </div>
+          <div class="panel green">
+            <h3>안전하게 쓰는 방법</h3>
+            <ul>
+              <li>.env 파일에 키와 URL을 따로 보관한다</li>
+              <li>.gitignore에 .env를 추가해 Git 추적에서 제외한다</li>
+              <li>코드는 환경변수로만 키를 읽는다</li>
+              <li>예시용 .env.example만 비어 있는 값으로 올린다</li>
+              <li>커밋 직전에 키가 노출되지 않았는지 한 번 더 확인한다</li>
+            </ul>
+          </div>
+        </div>
+        <div class="slide-footer">
+          <span
+            >GitHub에 한 번 올라간 비밀 정보는 영원히 남는다고 생각하세요.</span
+          >
+        </div>
+      </section>
+
+      <section class="slide">
+        <div class="slide-header">
+          <p class="eyebrow">3부 · GitHub 연동</p>
+          <h2 class="slide-title">결과물을 GitHub에 안전하게 올린다</h2>
+          <p class="slide-subtitle">
+            내 코드를 온라인에 보관하고, 공유하고, 필요하면 공개합니다.
+          </p>
+        </div>
+        <div class="slide-content two-col">
+          <div class="panel teal">
+            <h3>GitHub를 쓰는 이유</h3>
+            <ul>
+              <li>내 컴퓨터가 망가져도 코드가 남는다</li>
+              <li>다른 사람에게 코드를 보여줄 수 있다</li>
+              <li>GitHub Pages로 공개 URL을 만들 수 있다</li>
+            </ul>
+          </div>
+          <div class="panel coral">
+            <h3>올리지 말아야 할 것</h3>
+            <ul>
+              <li>service_role key</li>
+              <li>비밀번호, 개인 정보</li>
+              <li>민감한 환경 변수 파일</li>
+            </ul>
+          </div>
+        </div>
+        <div class="slide-footer">
+          <span>계정 만들기, 저장소 만들기, 올리기를 AI에게 물어봅니다.</span>
+        </div>
+      </section>
+
+      <section class="slide">
+        <div class="slide-header">
+          <p class="eyebrow">3부 · GitHub 프롬프트</p>
+          <h2 class="slide-title">AI에게 GitHub에 올리는 방법을 물어본다</h2>
+        </div>
+        <div class="slide-content">
+          <pre>
+방금 만든 데일리 노트 웹페이지를 GitHub에 올리고 싶어.
+나는 코딩과 GitHub를 잘 몰라.
+계정 만들기, 새 저장소 만들기, 코드 올리기 순서를 알려주고,
+민감한 정보가 없는지 확인하는 방법과 .gitignore도 함께 알려줘.</pre
+          >
+          <div class="callout">
+            <p>여유가 있으면 GitHub Pages로 공개 URL까지 만들어봅니다.</p>
+          </div>
+        </div>
+        <div class="slide-footer">
+          <span>코드를 안전하게 보관하고, 필요하면 공유합니다.</span>
+        </div>
+      </section>
+
+      <section class="slide">
+        <div class="slide-header">
           <p class="eyebrow">3부 · 확장</p>
           <h2 class="slide-title">같은 흐름을 내 아이디어에 적용한다</h2>
         </div>
@@ -1504,7 +1919,7 @@
           <div class="step">
             <span class="num">1</span>
             <strong>주제 바꾸기</strong>
-            <span>오늘의 기록장을 다른 소재로 바꿉니다.</span>
+            <span>데일리 노트을 다른 소재로 바꿉니다.</span>
           </div>
           <div class="step">
             <span class="num">2</span>
@@ -1542,15 +1957,17 @@
               <strong>2</strong
               ><span>상황, 목표, 결과물, 조건으로 요청했다.</span>
             </li>
-            <li>
-              <strong>3</strong><span>오늘의 기록장을 작게 기획했다.</span>
-            </li>
+            <li><strong>3</strong><span>데일리 노트을 작게 기획했다.</span></li>
             <li>
               <strong>4</strong><span>Supabase와 웹페이지를 연결해봤다.</span>
             </li>
             <li>
               <strong>5</strong
               ><span>부족한 결과와 에러를 다시 AI에게 전달했다.</span>
+            </li>
+            <li>
+              <strong>6</strong
+              ><span>완성된 결과물을 GitHub에 안전하게 올렸다.</span>
             </li>
           </ol>
         </div>
@@ -1559,51 +1976,49 @@
         </div>
       </section>
 
-      <section class="slide">
+      <section class="slide next-steps-slide">
         <div class="slide-header">
-          <p class="eyebrow">마무리 · Q&A</p>
-          <h2 class="slide-title">질문은 구체적이지 않아도 괜찮다</h2>
+          <p class="eyebrow">마무리 · 다음 단계</p>
+          <h2 class="slide-title">다음에는 AI에게 더 큰 일을 맡기는 법을 배웁니다</h2>
         </div>
-        <div class="slide-content">
-          <ul class="check-grid">
-            <li>프롬프트에 역할을 꼭 넣어야 하나요?</li>
-            <li>Supabase 연결 정보는 어디에 넣어야 하나요?</li>
-            <li>저장 버튼을 눌렀는데 DB에 안 들어가면 어떻게 하나요?</li>
-            <li>에러 메시지가 영어로 나오면 어떻게 물어봐야 하나요?</li>
-            <li>
-              오늘 만든 기록장을 제 아이디어로 바꾸려면 어디부터 바꾸나요?
-            </li>
-          </ul>
+        <div class="slide-content flow-grid">
+          <div class="step">
+            <span class="num">1</span>
+            <strong>Skills</strong>
+            <span>반복 작업을 재사용 가능한 작업법으로 정리합니다.</span>
+          </div>
+          <div class="step">
+            <span class="num">2</span>
+            <strong>MCP</strong>
+            <span>AI가 파일, DB, 업무 도구와 안전하게 연결되는 방식을 배웁니다.</span>
+          </div>
+          <div class="step">
+            <span class="num">3</span>
+            <strong>Plugins</strong>
+            <span>필요한 기능을 붙여 나만의 AI 작업 환경을 확장합니다.</span>
+          </div>
+          <div class="step">
+            <span class="num">4</span>
+            <strong>Hermes</strong>
+            <span>자동화와 에이전트 흐름을 더 넓은 업무로 연결합니다.</span>
+          </div>
         </div>
         <div class="slide-footer">
-          <span>기초적인 질문일수록 좋습니다.</span>
+          <span>오늘은 첫 경험, 다음은 나만의 AI 작업 시스템입니다.</span>
         </div>
       </section>
 
-      <section class="slide closing-slide">
+      <section class="slide qna-slide">
         <div class="slide-header">
-          <p class="eyebrow">마무리 · 연결점</p>
-          <h2 class="slide-title">오늘의 작은 시도는 나중에 연결점이 됩니다</h2>
-        </div>
-        <div class="slide-content">
-          <div class="quote">
-            “You can’t connect the dots looking forward;<br />you can only
-            connect them looking backwards.”<br /><br />— Steve Jobs
-          </div>
-          <div class="callout">
-            <p>
-              오늘 만든 작은 결과물, 오늘 만난 에러, 오늘 다시 질문했던 경험은
-              나중에 더 큰 시도의 연결점이 됩니다.
-            </p>
-          </div>
-        </div>
-        <div class="slide-footer">
-          <span>오늘의 경험을 다음 시도의 재료로 가져갑니다.</span>
+          <h2 class="slide-title">Q&amp;A 시간</h2>
         </div>
       </section>
     </main>
 
     <nav class="controls" aria-label="슬라이드 이동">
+      <button id="homeBtn" type="button" aria-label="첫 슬라이드로 이동">
+        ⌂
+      </button>
       <button id="prevBtn" type="button" aria-label="이전 슬라이드">‹</button>
       <span id="counter">1 / 1</span>
       <button id="nextBtn" type="button" aria-label="다음 슬라이드">›</button>
@@ -1616,6 +2031,7 @@
       const counter = document.getElementById('counter')
       const progressBar = document.getElementById('progressBar')
       const prevBtn = document.getElementById('prevBtn')
+      const homeBtn = document.getElementById('homeBtn')
       const nextBtn = document.getElementById('nextBtn')
       const printBtn = document.getElementById('printBtn')
 
@@ -1642,6 +2058,7 @@
       }
 
       prevBtn.addEventListener('click', () => moveBy(-1))
+      homeBtn.addEventListener('click', () => showSlide(0))
       nextBtn.addEventListener('click', () => moveBy(1))
       printBtn.addEventListener('click', () => window.print())
 
