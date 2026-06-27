@@ -1,0 +1,2869 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>2차강의 · DB 연동부터 배포까지</title>
+    <style>
+      :root {
+        /* ── 바탕: 차콜(다크) ── */
+        --bg: #12161b;
+        --paper: #1e252c;
+        --surface: #28313a;
+        --surface-2: #323d47;
+        --line: #3b454f;
+
+        /* ── 글자 ── */
+        --ink: #f3f5f7;
+        --ink-soft: #cdd4db;
+        --muted: #95a0ab;
+
+        /* ── 포인트: 옐로우(꿀) — 포인트로만 ── */
+        --honey: #ffc93c;
+        --honey-deep: #f2a900;
+
+        /* ── 포인트: 블루 / 민트 ── */
+        --blue: #5b9dff;
+        --blue-deep: #2d7ff9;
+        --mint: #2dd4bf;
+        --mint-deep: #14c2a3;
+        --bad: #f0795f;
+
+        --good: var(--mint);
+        --warn: var(--honey);
+
+        --shadow: 0 18px 46px rgba(0, 0, 0, 0.42);
+        --shadow-sm: 0 8px 22px rgba(0, 0, 0, 0.28);
+
+        --accent: var(--blue);
+        --accent-deep: var(--blue-deep);
+        --accent-soft: color-mix(in srgb, var(--blue) 16%, var(--paper));
+
+        --slide-pad-x: 76px;
+        --slide-pad-y: 56px;
+        --content-gap: 24px;
+        --header-gap: 40px;
+        --card-pad: 28px;
+        --radius-card: 14px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        min-height: 100%;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: 'Pretendard', 'Noto Sans KR', 'Malgun Gothic', Arial,
+          sans-serif;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      body {
+        overflow: hidden;
+      }
+
+      .deck {
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+      }
+
+      .slide {
+        display: none;
+        width: min(1700px, 100vw);
+        aspect-ratio: 16 / 9;
+        max-height: 100vh;
+        position: relative;
+        overflow: hidden;
+        padding: var(--slide-pad-y) var(--slide-pad-x);
+        background: radial-gradient(
+            120% 80% at 100% 0%,
+            color-mix(in srgb, var(--accent) 10%, transparent),
+            transparent 46%
+          ),
+          radial-gradient(
+            90% 70% at 0% 100%,
+            rgba(255, 201, 60, 0.05),
+            transparent 50%
+          ),
+          var(--paper);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        box-shadow: var(--shadow);
+      }
+
+      .slide.active {
+        display: grid;
+        grid-template-rows: auto minmax(0, 1fr) auto;
+        gap: 0;
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin: 0;
+      }
+
+      .slide-header {
+        display: grid;
+        gap: 16px;
+        max-width: 1000px;
+        z-index: 1;
+      }
+
+      .eyebrow {
+        justify-self: start;
+        color: var(--accent);
+        font-size: 14px;
+        font-weight: 850;
+        line-height: 1;
+        background: var(--accent-soft);
+        border: 1px solid color-mix(in srgb, var(--accent) 38%, transparent);
+        border-radius: 999px;
+        padding: 8px 13px;
+      }
+
+      .slide-title {
+        color: var(--ink);
+        max-width: 1000px;
+        word-break: keep-all;
+      }
+
+      h1.slide-title {
+        font-size: clamp(46px, 6vh, 72px);
+        line-height: 1.32;
+        font-weight: 850;
+      }
+
+      h2.slide-title {
+        font-size: clamp(32px, 4.4vh, 52px);
+        line-height: 1.3;
+        font-weight: 800;
+      }
+
+      .slide-subtitle {
+        max-width: 880px;
+        color: var(--muted);
+        font-size: clamp(21px, 2.4vh, 29px);
+        line-height: 1.44;
+        font-weight: 500;
+      }
+
+      .slide-content {
+        min-height: 0;
+        z-index: 1;
+        align-self: center;
+        display: grid;
+        gap: var(--content-gap);
+        margin-top: var(--header-gap);
+      }
+
+      p,
+      li {
+        font-size: clamp(18px, 2.1vh, 24px);
+        line-height: 1.46;
+        font-weight: 500;
+      }
+
+      ul,
+      ol {
+        margin: 0;
+        padding-left: 1.2em;
+      }
+
+      li + li {
+        margin-top: 10px;
+      }
+
+      .lead {
+        color: var(--ink-soft);
+        font-size: clamp(21px, 2.4vh, 30px);
+        max-width: 900px;
+      }
+
+      .mini {
+        color: var(--muted);
+        font-size: clamp(14px, 1.5vh, 17px);
+        line-height: 1.4;
+      }
+
+      .hl {
+        background: var(--honey);
+        color: #15191e;
+        padding: 1px 10px;
+        margin: 0 6px;
+        border-radius: 5px;
+        font-weight: 800;
+      }
+      .hl-text {
+        color: var(--honey);
+        font-weight: 800;
+      }
+
+      code,
+      pre {
+        font-family: 'D2Coding', Consolas, 'Courier New', monospace;
+      }
+
+      pre {
+        margin: 0;
+        white-space: pre-wrap;
+        word-break: keep-all;
+        background: #11151a;
+        color: #eef3f6;
+        border-radius: var(--radius-card);
+        padding: 22px 24px;
+        font-size: clamp(16px, 1.7vh, 20px);
+        line-height: 1.55;
+        border-left: 6px solid var(--accent);
+      }
+
+      .quote {
+        border-left: 8px solid var(--honey);
+        padding: 22px 0 24px 32px;
+        font-size: clamp(30px, 3.8vh, 46px);
+        line-height: 1.22;
+        font-weight: 850;
+        max-width: 980px;
+        color: var(--ink);
+        background: linear-gradient(
+          90deg,
+          rgba(255, 201, 60, 0.12),
+          transparent 62%
+        );
+        border-radius: var(--radius-card);
+      }
+
+      .callout {
+        background: var(--accent-soft);
+        border: 1px solid color-mix(in srgb, var(--accent) 32%, transparent);
+        border-left: 7px solid var(--accent);
+        border-radius: var(--radius-card);
+        padding: 20px 22px;
+      }
+
+      .pause-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--honey);
+        color: #15191e;
+        font-weight: 900;
+        font-size: clamp(15px, 1.7vh, 19px);
+        padding: 8px 16px;
+        border-radius: 999px;
+      }
+      .pause-badge::before {
+        content: '⏸';
+        font-size: 1.05em;
+      }
+
+      .two-col {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: var(--content-gap);
+        align-items: stretch;
+      }
+
+      .three-col {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 22px;
+        align-items: stretch;
+      }
+
+      .grid-2x2 {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-rows: repeat(2, minmax(0, 1fr));
+        gap: 22px;
+        align-items: stretch;
+      }
+
+      /* 2x2 카드: 모든 칸의 padding을 동일하게, 내용은 세로 중앙으로
+         정렬해 첫 칸만 위 여백이 넓어 보이는 현상을 막는다 */
+      .grid-2x2 .panel {
+        display: grid;
+        align-content: center;
+        padding: 26px 30px;
+      }
+
+      .flow-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 24px;
+        align-items: stretch;
+      }
+
+      .flow-grid.cols-3 {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+      .flow-grid.cols-5 {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 16px;
+      }
+
+      .compare-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: var(--content-gap);
+        align-items: stretch;
+      }
+
+      .panel {
+        border: 1px solid var(--line);
+        border-radius: var(--radius-card);
+        padding: var(--card-pad) 30px;
+        background: var(--surface);
+        box-shadow: var(--shadow-sm);
+      }
+
+      .panel > * + * {
+        margin-top: 14px;
+      }
+
+      .panel h3 {
+        font-size: clamp(21px, 2.4vh, 28px);
+        line-height: 1.25;
+        font-weight: 800;
+        color: var(--ink);
+      }
+
+      .panel p,
+      .panel li {
+        font-size: clamp(17px, 1.85vh, 22px);
+        line-height: 1.48;
+        color: var(--ink-soft);
+      }
+
+      .sql-ex {
+        display: block;
+        background: #11151a;
+        color: #eef3f6;
+        border-radius: 10px;
+        padding: 10px 13px;
+        font-size: clamp(13px, 1.5vh, 16px);
+        line-height: 1.45;
+        word-break: break-all;
+        border-left: 4px solid var(--accent);
+      }
+      .sql-ex b {
+        color: #7cc4ff;
+        font-weight: 700;
+      }
+
+      .panel.accent {
+        border-top: 5px solid var(--accent);
+        background: linear-gradient(
+          180deg,
+          color-mix(in srgb, var(--accent) 16%, var(--surface)),
+          var(--surface) 52%
+        );
+      }
+      .panel.honey {
+        border-top: 5px solid var(--honey);
+        background: linear-gradient(
+          180deg,
+          rgba(255, 201, 60, 0.14),
+          var(--surface) 52%
+        );
+      }
+      .panel.good {
+        border-top: 5px solid var(--good);
+        background: linear-gradient(
+          180deg,
+          color-mix(in srgb, var(--mint) 15%, var(--surface)),
+          var(--surface) 52%
+        );
+      }
+      .panel.bad {
+        border-top: 5px solid #7c8893;
+        background: var(--surface);
+      }
+
+      .step {
+        position: relative;
+        border: 1px solid var(--line);
+        border-radius: var(--radius-card);
+        padding: 26px;
+        background: var(--surface);
+        box-shadow: var(--shadow-sm);
+        display: grid;
+        align-content: start;
+        min-height: 180px;
+      }
+
+      .step .num {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        margin-bottom: 16px;
+        color: #15191e;
+        background: var(--honey);
+        border-radius: 999px;
+        font-size: 15px;
+        font-weight: 900;
+        line-height: 1;
+      }
+
+      .step strong {
+        display: block;
+        font-size: clamp(20px, 2.15vh, 26px);
+        line-height: 1.2;
+        margin-bottom: 12px;
+        color: var(--ink);
+      }
+
+      .step span:not(.num) {
+        color: var(--muted);
+        font-size: clamp(16px, 1.72vh, 20px);
+        line-height: 1.45;
+      }
+
+      .flow-grid .step:not(:last-child)::after {
+        content: '→';
+        position: absolute;
+        right: -18px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--accent);
+        font-size: 24px;
+        font-weight: 900;
+        z-index: 2;
+      }
+      .flow-grid.cols-5 .step:not(:last-child)::after {
+        right: -13px;
+        font-size: 20px;
+      }
+
+      .check-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px 24px;
+        padding: 0;
+        list-style: none;
+      }
+
+      .check-grid li {
+        position: relative;
+        display: flex;
+        align-items: center;
+        min-height: 72px;
+        border: 1px solid var(--line);
+        border-left: 6px solid var(--accent);
+        border-radius: var(--radius-card);
+        padding: 18px 22px 18px 56px;
+        background: var(--surface);
+        box-shadow: var(--shadow-sm);
+        font-size: clamp(17px, 1.85vh, 22px);
+        line-height: 1.4;
+        color: var(--ink-soft);
+      }
+
+      .check-grid li::before {
+        content: '✓';
+        position: absolute;
+        left: 22px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--accent);
+        font-size: 18px;
+        font-weight: 900;
+      }
+
+      .timeline {
+        display: grid;
+        gap: 14px;
+        padding: 0;
+        list-style: none;
+      }
+
+      .timeline li {
+        display: grid;
+        grid-template-columns: 60px minmax(0, 1fr);
+        gap: 22px;
+        align-items: center;
+        padding: 12px 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .timeline strong {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 999px;
+        background: var(--honey);
+        color: #15191e;
+        font-size: 18px;
+        font-weight: 900;
+      }
+
+      .timeline span {
+        font-size: clamp(17px, 1.85vh, 22px);
+        line-height: 1.45;
+        color: var(--ink-soft);
+      }
+
+      /* ── 데이터 테이블 (엑셀처럼 보여주기) ── */
+      .data-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: var(--surface);
+        border-radius: var(--radius-card);
+        overflow: hidden;
+        box-shadow: var(--shadow-sm);
+        font-size: clamp(15px, 1.7vh, 20px);
+      }
+      .data-table th,
+      .data-table td {
+        padding: 13px 18px;
+        text-align: left;
+        border-bottom: 1px solid var(--line);
+        color: var(--ink-soft);
+      }
+      .data-table th {
+        background: var(--surface-2);
+        color: var(--ink);
+        font-weight: 800;
+      }
+      .data-table td code {
+        color: var(--honey);
+        font-weight: 700;
+      }
+      .data-table tr:last-child td {
+        border-bottom: 0;
+      }
+
+      /* ── 패널 안 짧은 예시 SQL ── */
+      .sql-ex {
+        display: block;
+        margin-top: 20px;
+        padding: 11px 13px;
+        background: #11151a;
+        border-radius: 9px;
+        border-left: 4px solid var(--accent);
+        color: var(--honey);
+        font-size: clamp(13px, 1.45vh, 16px);
+        line-height: 1.45;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+
+      .media-split {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        display: grid;
+        gap: 32px;
+        align-items: center;
+      }
+
+      .media-text > * + * {
+        margin-top: 14px;
+      }
+
+      .media-full {
+        display: grid;
+      }
+
+      figure.media-frame {
+        margin: 0;
+        display: grid;
+        place-items: center;
+        gap: 10px;
+      }
+
+      .media-frame {
+        position: relative;
+        border: 2px dashed color-mix(in srgb, var(--honey) 45%, var(--line));
+        border-radius: var(--radius-card);
+        background: repeating-linear-gradient(
+          45deg,
+          var(--paper),
+          var(--paper) 12px,
+          var(--surface) 12px,
+          var(--surface) 24px
+        );
+        min-height: 280px;
+        width: 100%;
+        color: var(--muted);
+        overflow: hidden;
+      }
+
+      .media-frame::before {
+        content: '🖼  이미지 자리 (주석 참고)';
+        position: absolute;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        font-size: 15px;
+        font-weight: 700;
+      }
+
+      .media-frame > img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+
+      .media-frame:has(img) {
+        border-style: solid;
+        border-color: var(--line);
+        background: none;
+      }
+      .media-frame:has(img)::before {
+        content: none;
+      }
+
+      figcaption.mini {
+        position: relative;
+        z-index: 1;
+      }
+
+      .slide-footer {
+        justify-self: end;
+        align-self: end;
+        z-index: 1;
+        max-width: 760px;
+        padding-top: 10px;
+        border-top: 1px solid var(--line);
+        color: var(--muted);
+        font-size: 15px;
+        line-height: 1.35;
+        text-align: right;
+      }
+
+      .hero {
+        background: radial-gradient(
+            90% 90% at 85% 10%,
+            color-mix(in srgb, var(--accent) 16%, transparent),
+            transparent 50%
+          ),
+          radial-gradient(
+            80% 80% at 5% 95%,
+            rgba(255, 201, 60, 0.1),
+            transparent 52%
+          ),
+          var(--paper);
+      }
+
+      .hero.active {
+        align-content: center;
+        grid-template-rows: auto;
+      }
+
+      .hero .slide-header {
+        max-width: 940px;
+        gap: 20px;
+      }
+
+      .qna.active {
+        place-items: center;
+        grid-template-rows: 1fr;
+      }
+
+      .qna .slide-header {
+        justify-items: center;
+        text-align: center;
+        max-width: none;
+      }
+
+      .qna .slide-title {
+        font-size: clamp(64px, 8.6vh, 104px);
+      }
+
+      .chapter.active {
+        place-items: center;
+        grid-template-rows: 1fr;
+        text-align: center;
+      }
+      .chapter .slide-header {
+        justify-items: center;
+        max-width: none;
+        gap: 24px;
+      }
+      .chapter .part-no {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        font-size: clamp(20px, 2.4vh, 28px);
+        font-weight: 900;
+        color: var(--accent);
+        letter-spacing: 2px;
+      }
+      .chapter .part-no::before,
+      .chapter .part-no::after {
+        content: '';
+        width: 46px;
+        height: 2px;
+        background: var(--accent);
+        opacity: 0.6;
+      }
+      .chapter .slide-title {
+        font-size: clamp(48px, 7vh, 88px);
+      }
+      .chapter .hexline {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+      }
+      .chapter .hexline i {
+        width: 16px;
+        height: 16px;
+        background: var(--honey);
+        clip-path: polygon(25% 5%, 75% 5%, 100% 50%, 75% 95%, 25% 95%, 0% 50%);
+        opacity: 0.5;
+      }
+      .chapter .hexline i:nth-child(2) {
+        opacity: 0.8;
+      }
+      .chapter .hexline i:nth-child(3) {
+        opacity: 1;
+      }
+
+      .outro .slide-content {
+        align-self: center;
+      }
+      .outro .cta {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        justify-self: start;
+        background: var(--bad);
+        color: #fff;
+        font-size: clamp(20px, 2.6vh, 30px);
+        font-weight: 900;
+        padding: 14px 26px;
+        border-radius: 999px;
+        margin-top: 6px;
+      }
+      .outro .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: clamp(18px, 2.1vh, 24px);
+        font-weight: 900;
+        margin-top: 18px;
+      }
+      .outro .brand .dot {
+        width: 30px;
+        height: 30px;
+        background: var(--honey);
+        clip-path: polygon(25% 5%, 75% 5%, 100% 50%, 75% 95%, 25% 95%, 0% 50%);
+      }
+
+      /* ── 체크포인트(중간 격려) — 중앙 정렬 ── */
+      .midcta.active {
+        place-items: center;
+        grid-template-rows: 1fr;
+        text-align: center;
+      }
+      .midcta .slide-header {
+        justify-items: center;
+        max-width: none;
+      }
+
+      @keyframes fadeInDown {
+        from {
+          opacity: 0;
+          transform: translateY(-32px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(32px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+      @keyframes slideInLeft {
+        from {
+          opacity: 0;
+          transform: translateX(-44px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+      @keyframes slideInRight {
+        from {
+          opacity: 0;
+          transform: translateX(44px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+      @keyframes zoomIn {
+        from {
+          opacity: 0;
+          transform: scale(0.9);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+      @keyframes popIn {
+        0% {
+          opacity: 0;
+          transform: scale(0.8);
+        }
+        60% {
+          transform: scale(1.05);
+        }
+        100% {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+
+      .slide [data-anim] {
+        opacity: 0;
+      }
+
+      .slide.active [data-anim] {
+        animation: var(--dur, 620ms)
+          var(--ease, cubic-bezier(0.22, 0.61, 0.36, 1)) both;
+        animation-delay: calc(var(--i, 0) * var(--stagger, 90ms));
+      }
+
+      .slide.active [data-anim='down'] {
+        animation-name: fadeInDown;
+      }
+      .slide.active [data-anim='up'] {
+        animation-name: fadeInUp;
+      }
+      .slide.active [data-anim='fade'] {
+        animation-name: fadeIn;
+      }
+      .slide.active [data-anim='left'] {
+        animation-name: slideInLeft;
+      }
+      .slide.active [data-anim='right'] {
+        animation-name: slideInRight;
+      }
+      .slide.active [data-anim='zoom'] {
+        animation-name: zoomIn;
+      }
+      .slide.active [data-anim='pop'] {
+        animation-name: popIn;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .slide [data-anim] {
+          opacity: 1;
+        }
+        .slide.active [data-anim] {
+          animation: none;
+        }
+      }
+
+      .safe-guides {
+        position: absolute;
+        inset: 0;
+        z-index: 30;
+        display: none;
+        pointer-events: none;
+        font: 800 11px/1 'Pretendard', 'Noto Sans KR', sans-serif;
+      }
+      .guides-on .slide.active .safe-guides {
+        display: block;
+      }
+      .safe-guides .box {
+        position: absolute;
+      }
+      .safe-guides .box > b {
+        position: absolute;
+        top: 4px;
+        left: 6px;
+        padding: 3px 6px;
+        border-radius: 5px;
+        color: #11151a;
+        letter-spacing: 0;
+      }
+      .guide-action {
+        inset: 5%;
+        border: 1px solid rgba(45, 212, 191, 0.85);
+      }
+      .guide-action > b {
+        background: rgba(45, 212, 191, 0.92);
+      }
+      .guide-title {
+        inset: 10%;
+        border: 1px dashed rgba(91, 157, 255, 0.95);
+      }
+      .guide-title > b {
+        background: rgba(91, 157, 255, 0.95);
+        top: auto;
+        bottom: 4px;
+      }
+      .guide-sub {
+        left: 10%;
+        right: 10%;
+        bottom: 0;
+        height: 18%;
+        background: rgba(255, 201, 60, 0.14);
+        border-top: 1px dashed rgba(255, 201, 60, 0.9);
+      }
+      .guide-sub > b {
+        background: rgba(255, 201, 60, 0.95);
+        top: 6px;
+        left: 50%;
+        transform: translateX(-50%);
+      }
+      .guide-controls {
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 10%;
+        background: rgba(240, 121, 95, 0.12);
+        border-top: 1px solid rgba(240, 121, 95, 0.65);
+      }
+      .guide-controls > b {
+        background: rgba(240, 121, 95, 0.92);
+        top: auto;
+        bottom: 4px;
+        color: #fff;
+      }
+      .guide-cards {
+        top: 5%;
+        right: 5%;
+        width: 13%;
+        height: 13%;
+        border: 1px dotted rgba(255, 255, 255, 0.55);
+        background: rgba(255, 255, 255, 0.05);
+      }
+      .guide-cards > b {
+        background: rgba(255, 255, 255, 0.85);
+        top: auto;
+        bottom: 4px;
+        left: 6px;
+      }
+
+      .progress {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 5px;
+        background: rgba(255, 255, 255, 0.08);
+        z-index: 10;
+      }
+      .progress span {
+        display: block;
+        height: 100%;
+        width: 100%;
+        background: linear-gradient(90deg, var(--honey), var(--accent));
+        transform-origin: left center;
+        transform: scaleX(0.01);
+        transition: transform 180ms ease;
+      }
+
+      .controls {
+        position: fixed;
+        left: 22px;
+        right: auto;
+        bottom: 20px;
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        z-index: 20;
+        background: color-mix(in srgb, var(--surface) 92%, transparent);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 8px;
+        box-shadow: var(--shadow-sm);
+        backdrop-filter: blur(10px);
+      }
+
+      .controls button {
+        border: 1px solid var(--line);
+        background: var(--surface-2);
+        color: var(--ink);
+        min-width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        font-size: 20px;
+        font-weight: 850;
+        cursor: pointer;
+      }
+
+      .controls button:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+
+      .controls a {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 40px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 0 14px;
+        color: var(--ink);
+        background: var(--surface-2);
+        font-size: 14px;
+        font-weight: 850;
+        text-decoration: none;
+        white-space: nowrap;
+      }
+
+      .controls a:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+
+      #counter {
+        min-width: 72px;
+        text-align: center;
+        color: var(--muted);
+        font-size: 14px;
+        font-weight: 800;
+      }
+
+      @media (max-width: 900px) {
+        body {
+          overflow: auto;
+        }
+        .slide {
+          width: 100vw;
+          min-height: 100vh;
+          aspect-ratio: auto;
+          max-height: none;
+          border: 0;
+          border-radius: 0;
+          box-shadow: none;
+          padding: 42px 24px 84px;
+        }
+        .two-col,
+        .three-col,
+        .flow-grid,
+        .flow-grid.cols-5,
+        .compare-grid,
+        .media-split,
+        .check-grid {
+          grid-template-columns: 1fr;
+        }
+        .flow-grid .step:not(:last-child)::after {
+          content: none;
+        }
+        .step {
+          min-height: auto;
+        }
+        .slide-footer {
+          justify-self: start;
+          text-align: left;
+        }
+      }
+
+      @media print {
+        @page {
+          size: 16in 9in;
+          margin: 0;
+        }
+        body {
+          overflow: visible;
+        }
+        .deck {
+          display: block;
+        }
+        .slide,
+        .slide.active {
+          display: grid !important;
+          width: 16in;
+          height: 9in;
+          max-height: none;
+          border: 0;
+          border-radius: 0;
+          box-shadow: none;
+          page-break-after: always;
+        }
+        .slide [data-anim] {
+          opacity: 1;
+        }
+        .progress,
+        .controls {
+          display: none;
+        }
+      }
+
+      /* ── 데이터 흐름: 계층(포함) 카드 ── */
+      .nest-flow {
+        display: grid;
+        gap: 26px;
+        align-content: center;
+        width: 100%;
+        max-width: 760px;
+        margin: 0 auto;
+      }
+      .nest {
+        position: relative;
+        border-radius: var(--radius-card);
+        border: 1.5px solid color-mix(in srgb, var(--accent) 38%, var(--line));
+        background: color-mix(in srgb, var(--accent) 8%, var(--surface));
+        padding: 18px 20px 20px;
+      }
+      .nest > .nest {
+        margin-top: 14px;
+        background: color-mix(in srgb, var(--accent) 13%, var(--surface));
+      }
+      .nest > .nest > .nest {
+        background: color-mix(in srgb, var(--accent) 19%, var(--surface));
+      }
+      .nest-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 800;
+        font-size: clamp(17px, 1.9vh, 22px);
+        color: var(--ink);
+      }
+      .nest-label .badge {
+        font-size: clamp(11px, 1.2vh, 13px);
+        font-weight: 700;
+        color: #11151a;
+        background: var(--accent);
+        border-radius: 999px;
+        padding: 3px 10px;
+        letter-spacing: 0.02em;
+      }
+      .nest-desc {
+        margin: 6px 0 0;
+        color: var(--ink-soft);
+        font-size: clamp(13px, 1.5vh, 16px);
+        line-height: 1.5;
+      }
+      .nest-result {
+        display: grid;
+        gap: 12px;
+        grid-template-columns: 1fr 1fr;
+        border-radius: var(--radius-card);
+        border: 1.5px dashed color-mix(in srgb, var(--honey) 55%, var(--line));
+        background: color-mix(in srgb, var(--honey) 10%, var(--surface));
+        padding: 18px 20px;
+      }
+      .nest-result .nest-label .badge {
+        background: var(--honey);
+      }
+      .nest-result > .full {
+        grid-column: 1 / -1;
+      }
+      .nest-arrow {
+        justify-self: center;
+        font-size: clamp(22px, 2.6vh, 30px);
+        line-height: 1;
+        color: color-mix(in srgb, var(--accent) 70%, var(--ink));
+      }
+
+      /* ── 3번 슬라이드: 기획 먼저 안내 ── */
+      .plan-first {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        border-radius: var(--radius-card);
+        border: 1.5px solid color-mix(in srgb, var(--accent) 45%, var(--line));
+        border-left: 6px solid var(--accent);
+        background: color-mix(in srgb, var(--accent) 12%, var(--surface));
+        padding: 16px 22px;
+      }
+      .plan-first .icon {
+        flex: none;
+        width: 46px;
+        height: 46px;
+        display: grid;
+        place-items: center;
+        border-radius: 12px;
+        background: var(--accent);
+        font-size: 24px;
+      }
+      .plan-first .pf-text {
+        display: grid;
+        gap: 4px;
+      }
+      .plan-first .pf-title {
+        font-weight: 800;
+        font-size: clamp(18px, 2vh, 23px);
+        color: var(--ink);
+      }
+      .plan-first .pf-title b {
+        color: var(--honey);
+      }
+      .plan-first .pf-sub {
+        font-size: clamp(14px, 1.6vh, 18px);
+        color: var(--ink-soft);
+        line-height: 1.45;
+      }
+      .plan-first .pf-sub b {
+        color: var(--honey);
+        font-weight: 800;
+      }
+
+      /* ── 이미지 확대 뷰어(라이트박스) ── */
+      .slide-content img,
+      figure.media-frame img {
+        cursor: zoom-in;
+      }
+
+      .lightbox {
+        position: fixed;
+        inset: 0;
+        z-index: 1000;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 3vh 3vw;
+        background: rgba(10, 13, 17, 0.92);
+        cursor: zoom-out;
+        opacity: 0;
+        transition: opacity 0.18s ease;
+      }
+      .lightbox.open {
+        display: flex;
+        opacity: 1;
+      }
+      .lightbox img {
+        max-width: 96vw;
+        max-height: 94vh;
+        object-fit: contain;
+        border-radius: 10px;
+        box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6);
+      }
+      .lightbox .lightbox-close {
+        position: fixed;
+        top: 24px;
+        right: 28px;
+        width: 52px;
+        height: 52px;
+        border: none;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.14);
+        color: #fff;
+        font-size: 30px;
+        line-height: 1;
+        cursor: pointer;
+      }
+      .lightbox .lightbox-close:hover {
+        background: rgba(255, 255, 255, 0.28);
+      }
+      @media print {
+        .lightbox {
+          display: none !important;
+        }
+      }
+
+      /* ── 실습 프롬프트 칩 (hover 미리보기 · click 복사) ── */
+      .prompt-chips {
+        position: absolute;
+        top: 18px;
+        right: 18px;
+        z-index: 40;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: 8px;
+        max-width: 46%;
+      }
+      .prompt-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font: inherit;
+        font-size: clamp(13px, 1vw, 16px);
+        font-weight: 750;
+        color: var(--ink);
+        background: color-mix(in srgb, var(--accent, #5b9dff) 20%, var(--paper));
+        border: 1px solid
+          color-mix(in srgb, var(--accent, #5b9dff) 55%, transparent);
+        border-radius: 999px;
+        padding: 8px 14px;
+        cursor: pointer;
+        line-height: 1;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+        transition: transform 0.12s ease, background 0.12s ease;
+      }
+      .prompt-chip:hover {
+        background: color-mix(in srgb, var(--accent, #5b9dff) 34%, var(--paper));
+        transform: translateY(-1px);
+      }
+      .prompt-chip:active {
+        transform: translateY(0);
+      }
+      .prompt-chip .chip-ico {
+        font-size: 1.05em;
+      }
+      @media print {
+        .prompt-chips {
+          display: none !important;
+        }
+      }
+
+      /* 슬라이드 위에 떠서 프롬프트 전문을 보여주는 팝오버 (body에 부착) */
+      .prompt-popover {
+        position: fixed;
+        z-index: 1300;
+        width: min(620px, 92vw);
+        max-height: 70vh;
+        display: none;
+        flex-direction: column;
+        background: var(--paper, #1e252c);
+        color: var(--ink, #f3f5f7);
+        border: 1px solid var(--line, #3b454f);
+        border-top: 5px solid var(--accent, #5b9dff);
+        border-radius: 12px;
+        box-shadow: 0 22px 60px rgba(0, 0, 0, 0.5);
+        overflow: hidden;
+      }
+      .prompt-popover.open {
+        display: flex;
+      }
+      .prompt-popover .pop-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 14px 18px;
+        border-bottom: 1px solid var(--line, #3b454f);
+      }
+      .prompt-popover .pop-title {
+        font-size: 17px;
+        font-weight: 800;
+      }
+      .prompt-popover .pop-step {
+        font-size: 12px;
+        font-weight: 800;
+        color: var(--blue, #5b9dff);
+      }
+      .prompt-popover .pop-copyhint {
+        font-size: 12px;
+        color: var(--muted, #95a0ab);
+        white-space: nowrap;
+      }
+      .prompt-popover pre {
+        margin: 0;
+        padding: 16px 18px;
+        overflow: auto;
+        white-space: pre-wrap;
+        word-break: break-word;
+        font-family: 'D2Coding', 'Consolas', 'Menlo', monospace;
+        font-size: 14px;
+        line-height: 1.62;
+        color: var(--ink-soft, #cdd4db);
+      }
+      .prompt-popover .pop-note {
+        margin: 0;
+        padding: 10px 18px 14px;
+        font-size: 12.5px;
+        line-height: 1.5;
+        color: var(--muted, #95a0ab);
+        border-top: 1px dashed var(--line, #3b454f);
+      }
+
+      /* 복사 완료 토스트 */
+      .prompt-toast {
+        position: fixed;
+        left: 50%;
+        bottom: 96px;
+        transform: translateX(-50%) translateY(12px);
+        z-index: 1400;
+        padding: 12px 22px;
+        border-radius: 999px;
+        background: #2dd4bf;
+        color: #04201c;
+        font-weight: 850;
+        font-size: 15px;
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.18s ease, transform 0.18s ease;
+      }
+      .prompt-toast.show {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="progress" aria-hidden="true"><span id="progressBar"></span></div>
+
+    <main class="deck" aria-live="polite">
+      <!-- ═══════════ 1. 표지 (hero) ═══════════ -->
+      <section class="slide hero">
+        <div
+          style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: clamp(16px, 3vh, 28px); width: 100%;"
+        >
+          <figure
+            data-anim="up"
+            style="--i: 0; margin: 0;"
+          >
+            <img
+              src="이미지/1번슬라이드_이미지.png"
+              alt="AI와 함께 배우는 데이터 저장 & CRUD — CRUD 실습, 저장·조회·수정·삭제, 데이터 흐름과 GitHub 웹 배포를 초보자도 쉽게 배우는 2차강의 표지"
+              style="width: auto; height: auto; max-width: min(92vw, 720px); max-height: 74vh; object-fit: contain; border-radius: 24px; box-shadow: 0 22px 56px rgba(0, 0, 0, 0.18)"
+            />
+          </figure>
+          <p class="slide-subtitle" data-anim="up" style="--i: 1; text-align: center; margin: 0;">
+            🔗 완성 결과물 ·
+            <a
+              href="https://youngkeunahn.github.io/TodoApp/"
+              target="_blank"
+              rel="noopener"
+              style="color: var(--honey); font-weight: 800; text-decoration: none; word-break: break-all"
+              >youngkeunahn.github.io/TodoApp</a
+            >
+          </p>
+        </div>
+      </section>
+
+      <!-- ═══════════ 3. 결과 미리보기 + 오픈 루프 ═══════════ -->
+      <section class="slide">
+        <div class="slide-header">
+          <p class="eyebrow" data-anim="down" style="--i: 0">오늘 만들 결과물</p>
+          <h2 class="slide-title" data-anim="down" style="--i: 1">
+            데이터가 남는 카테고리 Todo 앱
+          </h2>
+        </div>
+        <div class="slide-content two-col">
+          <div class="panel accent" data-anim="left" style="--i: 2">
+            <h3>핵심 기능</h3>
+            <ul>
+              <li>카테고리별 할 일 관리</li>
+              <li>날짜별 Todo · 완료 체크</li>
+              <li>못 끝낸 할 일 계속 표시</li>
+              <li>카테고리별 남은 할 일 · 평균 달성속도</li>
+            </ul>
+          </div>
+          <div class="panel honey" data-anim="right" style="--i: 3">
+            <h3>그리고 끝에는</h3>
+            <ul>
+              <li>GitHub에 코드 올리고</li>
+              <li>GitHub Pages로 <span class="hl-text">인터넷에 공개</span></li>
+              <li>내 폰에서도 열리는 진짜 웹앱</li>
+            </ul>
+          </div>
+        </div>
+        <div class="slide-footer" data-anim="fade" style="--i: 4">
+          <span>중간에 꼭 만나는 "연결이 안 되는 순간"도 같이 넘깁니다 → 뒤에서 해결</span>
+        </div>
+      </section>
+
+      <!-- ═══════════ 4. 전체 개발 흐름 ═══════════ -->
+      <section class="slide">
+        <div class="slide-header">
+          <p class="eyebrow" data-anim="down" style="--i: 0">전체 그림</p>
+          <h2 class="slide-title" data-anim="down" style="--i: 1">
+            오늘 거치는 다섯 단계
+          </h2>
+        </div>
+        <div class="slide-content">
+          <div class="plan-first" data-anim="up" style="--i: 2">
+            <div class="icon">📝</div>
+            <div class="pf-text">
+              <span class="pf-title"
+                >시작 전 — <b>기획 문서</b>부터 만들기</span
+              >
+              <span class="pf-sub"
+                >코딩에 들어가기 전, <b>'기획 요청 프롬프트'</b>로 AI에게 부탁해
+                docs 폴더에 기획 문서를 먼저 만듭니다. 그 문서를 기준으로 아래
+                다섯 단계를 진행해요.</span
+              >
+            </div>
+          </div>
+          <div class="flow-grid cols-5">
+            <div class="step" data-anim="up" style="--i: 3">
+              <span class="num">1</span>
+              <strong>프론트 앱</strong>
+              <span>화면과 입력을 만든다</span>
+            </div>
+            <div class="step" data-anim="up" style="--i: 4">
+              <span class="num">2</span>
+              <strong>Supabase</strong>
+              <span>데이터를 저장·조회한다</span>
+            </div>
+            <div class="step" data-anim="up" style="--i: 5">
+              <span class="num">3</span>
+              <strong>Git</strong>
+              <span>코드 변경을 기록한다</span>
+            </div>
+            <div class="step" data-anim="up" style="--i: 6">
+              <span class="num">4</span>
+              <strong>GitHub</strong>
+              <span>코드를 온라인에 올린다</span>
+            </div>
+            <div class="step" data-anim="up" style="--i: 7">
+              <span class="num">5</span>
+              <strong>Pages</strong>
+              <span>웹사이트로 배포한다</span>
+            </div>
+          </div>
+        </div>
+        <div class="prompt-chips" data-anim="fade" style="--i: 9">
+          <button type="button" class="prompt-chip" data-prompt="step-1">
+            <span class="chip-ico">📋</span>기획 문서 프롬프트
+          </button>
+        </div>
+      </section>
+
+      <!-- ═══════════ PART 1 챕터 (블루) ═══════════ -->
+      <section
+        class="slide chapter"
+        style="--accent: var(--blue); --accent-deep: var(--blue-deep); --accent-soft: color-mix(in srgb, var(--blue) 16%, var(--paper));"
+      >
+        <div class="slide-header">
+          <div class="hexline" data-anim="pop" style="--i: 0">
+            <i></i><i></i><i></i>
+          </div>
+          <p class="part-no" data-anim="down" style="--i: 1">PART 1</p>
+          <h2 class="slide-title" data-anim="up" style="--i: 2">
+            데이터베이스 기초
+          </h2>
+        </div>
+      </section>
+
+      <!-- ═══════════ 6. 데이터베이스란? 왜 필요한가 ═══════════ -->
+      <section
+        class="slide"
+        style="--accent: var(--blue); --accent-deep: var(--blue-deep); --accent-soft: color-mix(in srgb, var(--blue) 16%, var(--paper));"
+      >
+        <div class="slide-header">
+          <p class="eyebrow" data-anim="down" style="--i: 0">1부 · 개념</p>
+          <h2 class="slide-title" data-anim="down" style="--i: 1">
+            데이터베이스가 필요한 이유
+          </h2>
+        </div>
+        <div class="slide-content grid-2x2">
+          <div class="panel accent" data-anim="up" style="--i: 2">
+            <h3>데이터 유지</h3>
+            <p>새로고침해도 사라지지 않는다</p>
+          </div>
+          <div class="panel accent" data-anim="up" style="--i: 3">
+            <h3>체계적 관리</h3>
+            <p>여러 데이터를 정리해서 다룬다</p>
+          </div>
+          <div class="panel accent" data-anim="up" style="--i: 4">
+            <h3>검색</h3>
+            <p>필요한 데이터만 골라낸다</p>
+          </div>
+          <div class="panel accent" data-anim="up" style="--i: 5">
+            <h3>함께 사용</h3>
+            <p>여러 사용자가 같은 데이터를 쓴다</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══════════ 7. 데이터는 어떻게 저장될까 — 엑셀처럼 ═══════════ -->
+      <section
+        class="slide"
+        style="--accent: var(--blue); --accent-deep: var(--blue-deep); --accent-soft: color-mix(in srgb, var(--blue) 16%, var(--paper));"
+      >
+        <div class="slide-header">
+          <p class="eyebrow" data-anim="down" style="--i: 0">1부 · 구조</p>
+          <h2 class="slide-title" data-anim="down" style="--i: 1">
+            데이터베이스는 엑셀과 똑같다
+          </h2>
+        </div>
+        <div class="slide-content media-full" data-anim="up" style="--i: 2; min-height: 0; overflow: hidden;">
+          <figure class="media-frame" style="min-height: 0; max-height: 60vh; border: none; background: none;">
+            <img
+              src="이미지/6번_슬라이드 이미지.png"
+              alt="데이터베이스 테이블과 엑셀(스프레드시트) 비교 — Row는 가로 한 줄, Column은 세로 데이터로 동일한 구조"
+              style="width: auto; height: auto; max-width: 100%; max-height: 60vh; object-fit: contain; background: var(--paper)"
+            />
+          </figure>
+        </div>
+      </section>
+
+      <!-- ═══════════ 9. Todo 데이터 예시 (표) ═══════════ -->
+      <section
+        class="slide"
+        style="--accent: var(--blue); --accent-deep: var(--blue-deep); --accent-soft: color-mix(in srgb, var(--blue) 16%, var(--paper));"
+      >
+        <div class="slide-header">
+          <p class="eyebrow" data-anim="down" style="--i: 0">1부 · 예시</p>
+          <h2 class="slide-title" data-anim="down" style="--i: 1">
+            todos 테이블은 이렇게 생겼다
+          </h2>
+        </div>
+        <div class="slide-content" data-anim="up" style="--i: 2">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>id</th>
+                <th>title</th>
+                <th>checked</th>
+                <th>target_date</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>1</code></td>
+                <td>Supabase 배우기</td>
+                <td>false</td>
+                <td>2026-06-23</td>
+              </tr>
+              <tr>
+                <td><code>2</code></td>
+                <td>GitHub 올리기</td>
+                <td>true</td>
+                <td>2026-06-24</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="slide-footer" data-anim="fade" style="--i: 3">
+          <span>한 행 = 할 일 하나 · 컬럼 = 그 할 일에 대한 정보</span>
+        </div>
+      </section>
+
+      <!-- ═══════════ 10. SQL이란? 4명령 ═══════════ -->
+      <section
+        class="slide"
+        style="--accent: var(--blue); --accent-deep: var(--blue-deep); --accent-soft: color-mix(in srgb, var(--blue) 16%, var(--paper));"
+      >
+        <div class="slide-header">
+          <p class="eyebrow" data-anim="down" style="--i: 0">1부 · SQL 미리보기</p>
+          <h2 class="slide-title" data-anim="down" style="--i: 1">
+            SQL은 데이터베이스에게 시키는 말
+          </h2>
+        </div>
+        <div class="slide-content flow-grid">
+          <div class="panel accent" data-anim="up" style="--i: 2">
+            <h3>SELECT</h3>
+            <p>조회한다</p>
+            <code class="sql-ex"><b>SELECT</b> * <b>FROM</b> todos;</code>
+            <span class="mini">→ 목록 불러오기에서 만남</span>
+          </div>
+          <div class="panel accent" data-anim="up" style="--i: 3">
+            <h3>INSERT</h3>
+            <p>추가한다</p>
+            <code class="sql-ex"><b>INSERT INTO</b> todos (title)<br /><b>VALUES</b> ('공부');</code>
+            <span class="mini">→ 할 일 추가에서 만남</span>
+          </div>
+          <div class="panel accent" data-anim="up" style="--i: 4">
+            <h3>UPDATE</h3>
+            <p>수정한다</p>
+            <code class="sql-ex"><b>UPDATE</b> todos <b>SET</b> checked = true<br /><b>WHERE</b> id = 1;</code>
+            <span class="mini">→ 완료 체크에서 만남</span>
+          </div>
+          <div class="panel accent" data-anim="up" style="--i: 5">
+            <h3>DELETE</h3>
+            <p>삭제한다</p>
+            <code class="sql-ex"><b>DELETE FROM</b> todos<br /><b>WHERE</b> id = 1;</code>
+            <span class="mini">→ 삭제 버튼에서 만남</span>
+          </div>
+        </div>
+        <div class="slide-footer" data-anim="fade" style="--i: 6">
+          <span>지금 외우지 마세요 — 4부에서 <strong>기능을 만들 때 하나씩</strong> 다시 만납니다</span>
+        </div>
+      </section>
+
+      <!-- ═══════════ PART 2 챕터 (민트) ═══════════ -->
+      <section
+        class="slide chapter"
+        style="--accent: var(--mint); --accent-deep: var(--mint-deep); --accent-soft: color-mix(in srgb, var(--mint) 16%, var(--paper));"
+      >
+        <div class="slide-header">
+          <div class="hexline" data-anim="pop" style="--i: 0">
+            <i></i><i></i><i></i>
+          </div>
+          <p class="part-no" data-anim="down" style="--i: 1">PART 2</p>
+          <h2 class="slide-title" data-anim="up" style="--i: 2">
+            Supabase와 테이블 설계
+          </h2>
+        </div>
+      </section>
+
+      <!-- ═══════════ 12. Supabase란? ═══════════ -->
+      <section
+        class="slide"
+        style="--accent: var(--mint); --accent-deep: var(--mint-deep); --accent-soft: color-mix(in srgb, var(--mint) 16%, var(--paper));"
+      >
+        <div class="slide-header">
+          <p class="eyebrow" data-anim="down" style="--i: 0">2부 · 도구</p>
+          <h2 class="slide-title" data-anim="down" style="--i: 1">
+            Supabase = 쉽게 쓰는 온라인 데이터베이스
+          </h2>
+        </div>
+        <div class="slide-content media-split">
+          <div class="media-text" data-anim="left" style="--i: 2">
+            <ul>
+              <li>PostgreSQL 기반의 진짜 DB</li>
+              <li>설치 없이 웹에서 바로 사용</li>
+              <li>테이블을 화면에서 클릭으로 생성</li>
+              <li>JavaScript로 손쉽게 연결</li>
+            </ul>
+          </div>
+          <figure class="media-frame" data-anim="zoom" style="--i: 3">
+            <img
+              src="이미지/10번_슬라이드_이미지.png"
+              alt="Supabase 프로젝트 대시보드 화면 — 프로젝트 상태, Primary Database, Get connected, 요청 통계"
+              style="width: auto; height: auto; max-width: 100%; max-height: 72vh; object-fit: contain; object-position: top; align-self: start; background: var(--paper)"
+            />
+            <figcaption class="mini">▲ Supabase 대시보드</figcaption>
+          </figure>
+        </div>
+        <div class="slide-footer" data-anim="fade" style="--i: 4">
+          <span>무료로 시작 · 나중에 로그인·파일 업로드까지 확장 가능</span>
+        </div>
+      </section>
+
+      <!-- ═══════════ 13. 주요 메뉴 ═══════════ -->
+      <section
+        class="slide"
+        style="--accent: var(--mint); --accent-deep: var(--mint-deep); --accent-soft: color-mix(in srgb, var(--mint) 16%, var(--paper));"
+      >
+        <div class="slide-header">
+          <p class="eyebrow" data-anim="down" style="--i: 0">2부 · 둘러보기</p>
+          <h2 class="slide-title" data-anim="down" style="--i: 1">
+            먼저 익힐 4개 메뉴
+          </h2>
+        </div>
+        <div class="slide-content media-split">
+          <div class="media-text" data-anim="left" style="--i: 2">
+            <ul>
+              <li><strong>Table Editor</strong> — 표(테이블)를 만들고 데이터를 본다</li>
+              <li><strong>SQL Editor</strong> — SQL을 직접 실행한다</li>
+              <li><strong>Database</strong> — 테이블 관계를 확인한다</li>
+              <li><strong>Project Settings</strong> — URL과 Key를 가져온다</li>
+            </ul>
+          </div>
+          <figure class="media-frame" data-anim="zoom" style="--i: 3">
+            <img
+              src="이미지/12번슬라이드_이미지.png"
+              alt="Supabase 사이드바 주요 메뉴 — Table Editor, SQL Editor, Database, Project Settings"
+              style="width: auto; height: auto; max-width: 100%; max-height: 72vh; object-fit: contain; object-position: top; align-self: start; background: var(--paper)"
+            />
+            <figcaption class="mini">▲ Supabase 사이드바의 주요 메뉴</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <!-- ═══════════ 14. 실습 앱 데이터 구조 ═══════════ -->
+      <section
+        class="slide"
+        style="--accent: var(--mint); --accent-deep: var(--mint-deep); --accent-soft: color-mix(in srgb, var(--mint) 16%, var(--paper));"
+      >
+        <div class="slide-header">
+          <p class="eyebrow" data-anim="down" style="--i: 0">2부 · 설계</p>
+          <h2 class="slide-title" data-anim="down" style="--i: 1">
+            우리 앱의 데이터 흐름
+          </h2>
+        </div>
+        <div class="slide-content" data-anim="up" style="--i: 2">
+          <div class="nest-flow">
+            <div class="nest">
+              <span class="nest-label"
+                ><span class="badge">바깥</span> 카테고리</span
+              >
+              <p class="nest-desc">여러 할 일을 묶는 큰 그룹</p>
+              <div class="nest">
+                <span class="nest-label"
+                  ><span class="badge">포함</span> Todo (할 일)</span
+                >
+                <p class="nest-desc">카테고리 안에 들어가는 하나의 작업</p>
+                <div class="nest">
+                  <span class="nest-label"
+                    ><span class="badge">속성</span> 체크 여부 · 날짜</span
+                  >
+                  <p class="nest-desc">각 할 일이 가지는 완료 상태와 일정</p>
+                </div>
+              </div>
+            </div>
+            <div class="nest-arrow">↓</div>
+            <div class="nest-result">
+              <div>
+                <span class="nest-label"
+                  ><span class="badge">결과</span> 날짜별 조회</span
+                >
+                <p class="nest-desc">날짜를 기준으로 할 일을 모아 보기</p>
+              </div>
+              <div>
+                <span class="nest-label"
+                  ><span class="badge">결과</span> 카테고리별 통계</span
+                >
+                <p class="nest-desc">그룹별로 개수·진행률 집계</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══════════ 15. 두 개의 테이블 ═══════════ -->
+      <section
+        class="slide"
+        style="--accent: var(--mint); --accent-deep: var(--mint-deep); --accent-soft: color-mix(in srgb, var(--mint) 16%, var(--paper));"
+      >
+        <div class="slide-header">
+          <p class="eyebrow" data-anim="down" style="--i: 0">2부 · 테이블</p>
+          <h2 class="slide-title" data-anim="down" style="--i: 1">
+            테이블은 두 개면 충분하다
+          </h2>
+        </div>
+        <div class="slide-content two-col">
+          <div class="panel accent" data-anim="left" style="--i: 2">
+            <h3>categories</h3>
+            <ul>
+              <li><code>id</code> — 고유값</li>
+              <li><code>name</code> — 카테고리 이름</li>
+              <li><code>created_at</code> — 생성일</li>
+            </ul>
+          </div>
+          <div class="panel accent" data-anim="right" style="--i: 3">
+            <h3>todos</h3>
+            <ul>
+              <li><code>id</code> · <code>title</code> · <code>checked</code></li>
+              <li><code>category_id</code> — 카테고리 연결</li>
+              <li><code>target_date</code> · <code>completed_at</code></li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══════════ 16. 카테고리와 Todo의 관계 (1:N) ═══════════ -->
+      <section
+        class="slide"
+        style="--accent: var(--mint); --accent-deep: var(--mint-deep); --accent-soft: color-mix(in srgb, var(--mint) 16%, var(--paper));"
+      >
+        <div class="slide-header">
+          <p class="eyebrow" data-anim="down" style="--i: 0">2부 · 관계</p>
+          <h2 class="slide-title" data-anim="down" style="--i: 1">
+            카테고리 하나에 여러 Todo
+          </h2>
+        </div>
+        <div class="slide-content media-full" data-anim="up" style="--i: 2; min-height: 0; overflow: hidden;">
+          <figure class="media-frame" style="min-height: 0; max-height: 47vh; border: none; background: none;">
+            <img
+              src="이미지/14번슬라이드_이미지.png"
+              alt="데이터베이스 1:N 관계 — Categories 테이블 1개가 여러 Todos를 가지며, Todos.category_id가 Categories.id를 참조"
+              style="width: auto; height: auto; max-width: 100%; max-height: 47vh; object-fit: contain; background: var(--paper)"
+            />
+          </figure>
+        </div>
+      </section>
+
+      <!-- ═══════════ PART 3 챕터 (블루) ═══════════ -->
+      <section
+        class="slide chapter"
+        style="--accent: var(--blue); --accent-deep: var(--blue-deep); --accent-soft: color-mix(in srgb, var(--blue) 16%, var(--paper));"
+      >
+        <div class="slide-header">
+          <div class="hexline" data-anim="pop" style="--i: 0">
+            <i></i><i></i><i></i>
+          </div>
+          <p class="part-no" data-anim="down" style="--i: 1">PART 3</p>
+          <h2 class="slide-title" data-anim="up" style="--i: 2">
+            Supabase 연동 실습
+          </h2>
+        </div>
+      </section>
+
+      <!-- ═══════════ 18. 프로젝트 생성 ═══════════ -->
+      <section
+        class="slide"
+        style="--accent: var(--blue); --accent-deep: var(--blue-deep); --accent-soft: color-mix(in srgb, var(--blue) 16%, var(--paper));"
+      >
+        <div class="slide-header">
+          <p class="eyebrow" data-anim="down" style="--i: 0">3부 · 실습</p>
+          <h2 class="slide-title" data-anim="down" style="--i: 1">
+            Supabase 프로젝트 만들기
+          </h2>
+        </div>
+        <div class="slide-content flow-grid cols-5">
+          <div class="step" data-anim="up" style="--i: 2">
+            <span class="num">1</span>
+            <strong>가입</strong>
+            <span>GitHub 계정으로 로그인</span>
+          </div>
+          <div class="step" data-anim="up" style="--i: 3">
+            <span class="num">2</span>
+            <strong>새 프로젝트</strong>
+            <span>이름 · 비밀번호 설정</span>
+          </div>
+          <div class="step" data-anim="up" style="--i: 4">
+            <span class="num">3</span>
+            <strong>대시보드</strong>
+            <span>Table · SQL · API 확인</span>
+          </div>
+          <div class="step" data-anim="up" style="--i: 5">
+            <span class="num">4</span>
+            <strong>SQL 실행</strong>
+            <span>프롬프트로 만든 SQL을 SQL Editor에 붙여넣고 실행</span>
+          </div>
+          <div class="step" data-anim="up" style="--i: 6">
+            <span class="num">5</span>
+            <strong>Table 확인</strong>
+            <span>Table Editor에서 생성된 테이블 확인</span>
+          </div>
+        </div>
+        <div class="slide-footer" data-anim="fade" style="--i: 7">
+          <span class="pause-badge">여기서 멈추고 직접 따라 해보세요</span>
+        </div>
+        <div class="prompt-chips" data-anim="fade" style="--i: 9">
+          <button type="button" class="prompt-chip" data-prompt="step-2">
+            <span class="chip-ico">📋</span>테이블 SQL 프롬프트
+          </button>
+        </div>
+      </section>
+
+      <!-- ═══════════ 19. 테이블 만들기 + FK ═══════════ -->
+      <section
+        class="slide"
+        style="--accent: var(--blue); --accent-deep: var(--blue-deep); --accent-soft: color-mix(in srgb, var(--blue) 16%, var(--paper));"
+      >
+        <div class="slide-header">
+          <p class="eyebrow" data-anim="down" style="--i: 0">3부 · 연결</p>
+          <h2 class="slide-title" data-anim="down" style="--i: 1">
+            두 테이블을 연결하는 Foreign Key
+          </h2>
+        </div>
+        <div class="slide-content media-full" data-anim="up" style="--i: 2; min-height: 0; overflow: hidden;">
+          <figure class="media-frame" style="min-height: 0; max-height: 47vh; border: none; background: none;">
+            <img
+              src="이미지/17번슬라이드_이미지.png"
+              alt="todos.category_id가 categories.id를 가리키는 Foreign Key 관계도"
+              style="width: auto; height: auto; max-width: 100%; max-height: 47vh; object-fit: contain; background: var(--paper)"
+            />
+          </figure>
+        </div>
+        <div class="slide-footer" data-anim="fade" style="--i: 3">
+          <span>→ 우리 앱: "이 할 일은 공부 카테고리 소속"을 번호로 묶어둔 것 — STEP 2 프롬프트의 Foreign Key 한 줄</span>
+        </div>
+      </section>
+
+      <!-- ═══════════ 20. 프론트 연결 + 보안 ═══════════ -->
+      <section
+        class="slide"
+        style="--accent: var(--blue); --accent-deep: var(--blue-deep); --accent-soft: color-mix(in srgb, var(--blue) 16%, var(--paper));"
+      >
+        <div class="slide-header">
+          <p class="eyebrow" data-anim="down" style="--i: 0">3부 · 연결</p>
+          <h2 class="slide-title" data-anim="down" style="--i: 1">
+            프론트엔드와 Supabase 잇기
+          </h2>
+        </div>
+        <div class="slide-content two-col">
+          <div class="panel accent" data-anim="left" style="--i: 2">
+            <h3>필요한 것</h3>
+            <pre>npm install
+  @supabase/supabase-js
+
+Project URL
+anon key</pre>
+          </div>
+          <div class="panel bad" data-anim="right" style="--i: 3">
+            <h3>⚠️ 주의</h3>
+            <p>
+              <span class="hl-text">service_role key</span>는 프론트에 절대 넣지
+              않습니다. 공개용 anon key만 사용하세요.
+            </p>
+          </div>
+        </div>
+        <div class="slide-footer" data-anim="fade" style="--i: 4">
+          <span>여기서 연결이 막히는 일이 자주 생깁니다 — 에러는 뒤에서 같이 해결</span>
+        </div>
+        <div class="prompt-chips" data-anim="fade" style="--i: 9">
+          <button type="button" class="prompt-chip" data-prompt="step-3">
+            <span class="chip-ico">📋</span>프론트 구현 프롬프트
+          </button>
+          <button type="button" class="prompt-chip" data-prompt="step-4">
+            <span class="chip-ico">📋</span>Supabase 연동 프롬프트
+          </button>
+        </div>
+      </section>
+
+      <!-- ═══════════ PART 4 챕터 (민트) ═══════════ -->
+      <section
+        class="slide chapter"
+        style="--accent: var(--mint); --accent-deep: var(--mint-deep); --accent-soft: color-mix(in srgb, var(--mint) 16%, var(--paper));"
+      >
+        <div class="slide-header">
+          <div class="hexline" data-anim="pop" style="--i: 0">
+            <i></i><i></i><i></i>
+          </div>
+          <p class="part-no" data-anim="down" style="--i: 1">PART 4</p>
+          <h2 class="slide-title" data-anim="up" style="--i: 2">
+            카테고리 Todo 앱 만들기
+          </h2>
+        </div>
+      </section>
+
+      <!-- ═══════════ 22. 카테고리 기능 ═══════════ -->
+      <section
+        class="slide"
+        style="--accent: var(--mint); --accent-deep: var(--mint-deep); --accent-soft: color-mix(in srgb, var(--mint) 16%, var(--paper));"
+      >
+        <div class="slide-header">
+          <p class="eyebrow" data-anim="down" style="--i: 0">4부 · 기능</p>
+          <h2 class="slide-title" data-anim="down" style="--i: 1">
+            카테고리부터 만든다
+          </h2>
+        </div>
+        <div class="slide-content flow-grid cols-3">
+          <div class="step" data-anim="up" style="--i: 2">
+            <span class="num">1</span>
+            <strong>추가</strong>
+            <span>이름을 입력해 categories에 저장</span>
+          </div>
+          <div class="step" data-anim="up" style="--i: 3">
+            <span class="num">2</span>
+            <strong>조회</strong>
+            <span>저장된 카테고리 목록 불러오기</span>
+          </div>
+          <div class="step" data-anim="up" style="--i: 4">
+            <span class="num">3</span>
+            <strong>선택</strong>
+            <span>Todo 작성 시 select로 고르기</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══════════ 23. Todo 추가 ═══════════ -->
+      <section
+        class="slide"
+        style="--accent: var(--mint); --accent-deep: var(--mint-deep); --accent-soft: color-mix(in srgb, var(--mint) 16%, var(--paper));"
+      >
+        <div class="slide-header">
+          <p class="eyebrow" data-anim="down" style="--i: 0">4부 · INSERT · SELECT</p>
+          <h2 class="slide-title" data-anim="down" style="--i: 1">
+            Todo 추가하고 목록 갱신하기
+          </h2>
+        </div>
+        <div class="slide-content media-full" data-anim="up" style="--i: 2">
+          <pre>① 입력값 받기   → 제목 · 카테고리 · 날짜
+② todos에 저장   → INSERT  (표에 새 줄 넣기)
+③ 목록 다시 조회 → SELECT  (표에서 꺼내 보기)</pre>
+        </div>
+        <div class="slide-footer" data-anim="fade" style="--i: 3">
+          <span>INSERT = 넣기 · SELECT = 꺼내 보기 — 데이터의 가장 기본 두 동작</span>
+        </div>
+      </section>
+
+      <!-- ═══════════ 24. Todo 목록 조회 + JOIN 예고 ═══════════ -->
+      <section
+        class="slide"
+        style="--accent: var(--mint); --accent-deep: var(--mint-deep); --accent-soft: color-mix(in srgb, var(--mint) 16%, var(--paper));"
+      >
+        <div class="slide-header">
+          <p class="eyebrow" data-anim="down" style="--i: 0">4부 · JOIN</p>
+          <h2 class="slide-title" data-anim="down" style="--i: 1">
+            화면에는 카테고리 "이름"이 필요하다
+          </h2>
+        </div>
+        <div class="slide-content media-split">
+          <div class="media-text" data-anim="left" style="--i: 2">
+            <p>Todo에는 <code>category_id</code>(숫자)만 저장됩니다.</p>
+            <p>화면에는 <span class="hl-text">"공부"</span> 같은 이름이 보여야 하죠.</p>
+            <p>그래서 두 표를 <strong>같은 번호끼리 짝지어</strong> 합칩니다 → <strong>JOIN (합쳐 보기)</strong></p>
+            <p>그러면 번호만 있던 할 일에 <span class="hl-text">이름이 딱 붙어</span> 한 줄로 나와요.</p>
+          </div>
+          <figure class="media-frame" data-anim="zoom" style="--i: 3">
+            <img
+              src="이미지/32번슬라이드_이미지.png"
+              alt="todos 표와 categories 표를 todos.category_id = categories.id 조건으로 연결해 카테고리 이름이 붙은 결과를 만드는 JOIN 개념도"
+              style="width: auto; height: auto; max-width: 100%; max-height: 72vh; object-fit: contain; object-position: top; align-self: start; background: var(--paper)"
+            />
+            <figcaption class="mini">▲ 두 표를 합쳐 이름을 붙이는 JOIN</figcaption>
+          </figure>
+        </div>
+        <div class="slide-footer" data-anim="fade" style="--i: 4">
+          <span>→ 우리 앱: STEP 3 프롬프트의 "categories와 JOIN해서 가져와줘" 한 줄이 이 이름을 붙입니다</span>
+        </div>
+      </section>
+
+      <!-- ═══════════ 25. checked 토글 ═══════════ -->
+      <section
+        class="slide"
+        style="--accent: var(--mint); --accent-deep: var(--mint-deep); --accent-soft: color-mix(in srgb, var(--mint) 16%, var(--paper));"
+      >
+        <div class="slide-header">
+          <p class="eyebrow" data-anim="down" style="--i: 0">4부 · UPDATE</p>
+          <h2 class="slide-title" data-anim="down" style="--i: 1">
+            체크 한 번에 두 가지가 바뀐다
+          </h2>
+        </div>
+        <div class="slide-content compare-grid">
+          <div class="panel good" data-anim="left" style="--i: 2">
+            <h3>완료로</h3>
+            <pre>checked: false → true
+completed_at: 오늘 날짜</pre>
+          </div>
+          <div class="panel bad" data-anim="right" style="--i: 2">
+            <h3>다시 미완료로</h3>
+            <pre>checked: true → false
+completed_at: null</pre>
+          </div>
+        </div>
+        <div class="slide-footer" data-anim="fade" style="--i: 3">
+          <span>이미 있는 줄의 값을 고쳐 쓰는 것 = UPDATE (바꾸기)</span>
+        </div>
+      </section>
+
+      <!-- ═══════════ 26. Todo 삭제 ═══════════ -->
+      <section
+        class="slide"
+        style="--accent: var(--mint); --accent-deep: var(--mint-deep); --accent-soft: color-mix(in srgb, var(--mint) 16%, var(--paper));"
+      >
+        <div class="slide-header">
+          <p class="eyebrow" data-anim="down" style="--i: 0">4부 · DELETE</p>
+          <h2 class="slide-title" data-anim="down" style="--i: 1">
+            id 기준으로 삭제하고 화면에서 지운다
+          </h2>
+        </div>
+        <div class="slide-content media-full" data-anim="up" style="--i: 2">
+          <pre>① 각 Todo 옆에 삭제 버튼
+② 그 Todo의 id로 표에서 삭제  → DELETE (지우기)
+③ 목록 다시 불러와 화면에서도 사라지게</pre>
+        </div>
+        <div class="slide-footer" data-anim="fade" style="--i: 3">
+          <span class="pause-badge">여기서 멈추고 직접 따라 해보세요</span>
+        </div>
+      </section>
+
+      <!-- ═══════════ 26. 체크포인트 (작은 성공 격려) ═══════════ -->
+      <section
+        class="slide midcta"
+        style="--accent: var(--mint); --accent-deep: var(--mint-deep); --accent-soft: color-mix(in srgb, var(--mint) 16%, var(--paper));"
+      >
+        <div class="slide-header">
+          <p class="eyebrow" data-anim="down" style="--i: 0">체크포인트 🎉</p>
+          <h2 class="slide-title" data-anim="up" style="--i: 1; line-height: 1.6">
+            여기까지 왔으면<br />이미 <span class="hl">진짜 DB 앱</span>을 만든 거예요
+          </h2>
+          <p class="slide-subtitle" data-anim="up" style="--i: 2">
+            저장 · 조회 · 완료 · 삭제까지 — 다음은 날짜별 관리입니다.
+          </p>
+        </div>
+        <div class="prompt-chips" data-anim="fade" style="--i: 9">
+          <button type="button" class="prompt-chip" data-prompt="step-6">
+            <span class="chip-ico">📋</span>검증 체크리스트 프롬프트
+          </button>
+          <button type="button" class="prompt-chip" data-prompt="step-7">
+            <span class="chip-ico">🛠️</span>에러 해결 프롬프트
+          </button>
+        </div>
+      </section>
+
+      <!-- ═══════════ PART 5 챕터 (블루) ═══════════ -->
+      <section
+        class="slide chapter"
+        style="--accent: var(--blue); --accent-deep: var(--blue-deep); --accent-soft: color-mix(in srgb, var(--blue) 16%, var(--paper));"
+      >
+        <div class="slide-header">
+          <div class="hexline" data-anim="pop" style="--i: 0">
+            <i></i><i></i><i></i>
+          </div>
+          <p class="part-no" data-anim="down" style="--i: 1">PART 5</p>
+          <h2 class="slide-title" data-anim="up" style="--i: 2">
+            날짜별 Todo 관리
+          </h2>
+        </div>
+      </section>
+
+      <!-- ═══════════ 29. target_date 개념 ═══════════ -->
+      <section
+        class="slide"
+        style="--accent: var(--blue); --accent-deep: var(--blue-deep); --accent-soft: color-mix(in srgb, var(--blue) 16%, var(--paper));"
+      >
+        <div class="slide-header">
+          <p class="eyebrow" data-anim="down" style="--i: 0">5부 · 날짜</p>
+          <h2 class="slide-title" data-anim="down" style="--i: 1">
+            "만든 날"과 "해야 하는 날"은 다르다
+          </h2>
+        </div>
+        <div class="slide-content two-col">
+          <div class="panel accent" data-anim="left" style="--i: 2">
+            <h3>target_date</h3>
+            <p>이 할 일을 <strong>해야 하는 날짜</strong></p>
+          </div>
+          <div class="panel bad" data-anim="right" style="--i: 3">
+            <h3>created_at</h3>
+            <p>이 할 일을 <strong>만든 날짜</strong> (다름)</p>
+          </div>
+        </div>
+        <div class="slide-footer" data-anim="fade" style="--i: 4">
+          <span>"오늘 할 일" 기준 = 만든 날이 아니라 <strong>해야 하는 날(target_date)</strong></span>
+        </div>
+        <div class="prompt-chips" data-anim="fade" style="--i: 9">
+          <button type="button" class="prompt-chip" data-prompt="step-5">
+            <span class="chip-ico">📋</span>날짜·통계 프롬프트
+          </button>
+        </div>
+      </section>
+
+      <!-- ═══════════ 30. 못 끝낸 Todo 계속 보여주기 (핵심 규칙) ═══════════ -->
+      <section
+        class="slide"
+        style="--accent: var(--blue); --accent-deep: var(--blue-deep); --accent-soft: color-mix(in srgb, var(--blue) 16%, var(--paper));"
+      >
+        <div class="slide-header">
+          <p class="eyebrow" data-anim="down" style="--i: 0">5부 · 핵심 규칙</p>
+        </div>
+        <div class="slide-content">
+          <p class="quote" data-anim="fade" style="--i: 1; --dur: 900ms">
+            완료하지 않은 Todo는<br />날짜가 지나도 계속 보여준다.
+          </p>
+        </div>
+        <div class="slide-footer" data-anim="fade" style="--i: 2">
+          <span>날짜를 고치지 않는 이유 — 며칠 밀렸는지 나중에 셀 수 있게</span>
+        </div>
+      </section>
+
+      <!-- ═══════════ 31. 일자별 화면 구성 ═══════════ -->
+      <section
+        class="slide"
+        style="--accent: var(--blue); --accent-deep: var(--blue-deep); --accent-soft: color-mix(in srgb, var(--blue) 16%, var(--paper));"
+      >
+        <div class="slide-header">
+          <p class="eyebrow" data-anim="down" style="--i: 0">5부 · 화면</p>
+          <h2 class="slide-title" data-anim="down" style="--i: 1">
+            밀린 할 일과 오늘 할 일을 나눈다
+          </h2>
+        </div>
+        <div class="slide-content two-col">
+          <div class="panel bad" data-anim="left" style="--i: 2">
+            <h3>밀린 할 일</h3>
+            <pre>□ [공부] Supabase 배우기
+  원래 날짜: 2026-06-23</pre>
+          </div>
+          <div class="panel good" data-anim="right" style="--i: 2">
+            <h3>오늘 할 일</h3>
+            <pre>□ [업무] SQL 정리하기
+  날짜: 2026-06-24</pre>
+          </div>
+        </div>
+        <div class="slide-footer" data-anim="fade" style="--i: 3">
+          <span>날짜 이동: 오늘 · 이전 · 다음 · 직접 선택</span>
+        </div>
+      </section>
+
+      <!-- ═══════════ 32. 카테고리별 남은 할 일 (filter/reduce) ═══════════ -->
+      <section
+        class="slide"
+        style="--accent: var(--blue); --accent-deep: var(--blue-deep); --accent-soft: color-mix(in srgb, var(--blue) 16%, var(--paper));"
+      >
+        <div class="slide-header">
+          <p class="eyebrow" data-anim="down" style="--i: 0">5부 · 집계</p>
+          <h2 class="slide-title" data-anim="down" style="--i: 1">
+            카테고리별 남은 할 일은 우리 앱에서 센다
+          </h2>
+        </div>
+        <div class="slide-content two-col">
+          <div class="media-text" data-anim="left" style="--i: 2">
+            <p>이미 불러온 목록에서 <span class="hl-text">안 끝낸 것만</span> 추려요.</p>
+            <p>카테고리끼리 모아 숫자만 세면 끝 — DB에 다시 안 물어봐요.</p>
+          </div>
+          <div class="panel accent" data-anim="right" style="--i: 3">
+            <pre>오늘 기준 남은 할 일
+공부: 2개
+업무: 1개
+개인: 0개</pre>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══════════ 31. 카테고리별 통계 (평균 달성속도) ═══════════ -->
+      <section
+        class="slide"
+        style="--accent: var(--blue); --accent-deep: var(--blue-deep); --accent-soft: color-mix(in srgb, var(--blue) 16%, var(--paper));"
+      >
+        <div class="slide-header">
+          <p class="eyebrow" data-anim="down" style="--i: 0">5부 · 통계</p>
+          <h2 class="slide-title" data-anim="down" style="--i: 1">
+            평균 달성속도까지 계산한다
+          </h2>
+        </div>
+        <div class="slide-content" data-anim="up" style="--i: 2">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>target_date</th>
+                <th>completed_at</th>
+                <th>달성속도</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>6/23</td><td>6/23</td><td><code>0일</code></td></tr>
+              <tr><td>6/23</td><td>6/24</td><td><code>1일</code></td></tr>
+              <tr><td>6/23</td><td>6/25</td><td><code>2일</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="slide-footer" data-anim="fade" style="--i: 3">
+          <span>달성속도 = 완료한 날짜(completed_at) − 해야 했던 날짜(target_date) — 4부에서 이 두 칸을 설계해 둔 덕분</span>
+        </div>
+      </section>
+
+      <!-- ═══════════ 32. Supabase View ═══════════ -->
+      <section
+        class="slide"
+        style="--accent: var(--blue); --accent-deep: var(--blue-deep); --accent-soft: color-mix(in srgb, var(--blue) 16%, var(--paper));"
+      >
+        <div class="slide-header">
+          <p class="eyebrow" data-anim="down" style="--i: 0">5부 · View</p>
+          <h2 class="slide-title" data-anim="down" style="--i: 1">
+            복잡한 통계는 View로 묶어둔다
+          </h2>
+        </div>
+        <div class="slide-content two-col">
+          <div class="media-text" data-anim="left" style="--i: 2">
+            <p>긴 SQL 계산을 매번 쓰지 않아도 됩니다.</p>
+            <p>우리 앱에서는 <span class="hl-text">평범한 표처럼</span> 꺼내 보기.</p>
+          </div>
+          <div class="panel accent" data-anim="right" style="--i: 3">
+            <h3>category_stats</h3>
+            <pre>공부 · 전체 5 / 완료 3 / 남은 2
+평균 달성속도: 0.7일
+
+업무 · 전체 4 / 완료 2 / 남은 2
+평균 달성속도: 1.5일</pre>
+          </div>
+        </div>
+        <div class="slide-footer" data-anim="fade" style="--i: 4">
+          <span>→ 우리 앱: STEP 5 프롬프트의 "category_stats View를 만드는 SQL도 함께 줘"가 이 표를 만들어줍니다</span>
+        </div>
+      </section>
+
+      <!-- ═══════════ PART 6 챕터 (민트) ═══════════ -->
+      <section
+        class="slide chapter"
+        style="--accent: var(--mint); --accent-deep: var(--mint-deep); --accent-soft: color-mix(in srgb, var(--mint) 16%, var(--paper));"
+      >
+        <div class="slide-header">
+          <div class="hexline" data-anim="pop" style="--i: 0">
+            <i></i><i></i><i></i>
+          </div>
+          <p class="part-no" data-anim="down" style="--i: 1">PART 6</p>
+          <h2 class="slide-title" data-anim="up" style="--i: 2">
+            Git과 GitHub
+          </h2>
+        </div>
+      </section>
+
+      <!-- ═══════════ 34. Git이란? + 용어 ═══════════ -->
+      <section
+        class="slide"
+        style="--accent: var(--mint); --accent-deep: var(--mint-deep); --accent-soft: color-mix(in srgb, var(--mint) 16%, var(--paper));"
+      >
+        <div class="slide-header">
+          <p class="eyebrow" data-anim="down" style="--i: 0">6부 · Git</p>
+          <h2 class="slide-title" data-anim="down" style="--i: 1">
+            Git = 코드의 변경 기록 관리 도구
+          </h2>
+        </div>
+        <div class="slide-content grid-2x2">
+          <div class="panel accent" data-anim="up" style="--i: 2">
+            <h3>Repository</h3>
+            <p>프로젝트 저장소</p>
+          </div>
+          <div class="panel accent" data-anim="up" style="--i: 3">
+            <h3>Commit</h3>
+            <p>코드 변경 기록</p>
+          </div>
+          <div class="panel accent" data-anim="up" style="--i: 4">
+            <h3>Push</h3>
+            <p>내 코드를 GitHub로</p>
+          </div>
+          <div class="panel accent" data-anim="up" style="--i: 5">
+            <h3>Pull</h3>
+            <p>GitHub 코드를 내 PC로</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══════════ 35. GitHub 연동 흐름 (연동→커밋→푸시) ═══════════ -->
+      <section
+        class="slide"
+        style="--accent: var(--mint); --accent-deep: var(--mint-deep); --accent-soft: color-mix(in srgb, var(--mint) 16%, var(--paper));"
+      >
+        <div class="slide-header">
+          <p class="eyebrow" data-anim="down" style="--i: 0">6부 · 연동</p>
+          <h2 class="slide-title" data-anim="down" style="--i: 1">
+            주소만 넣으면 — 연동 · 커밋 · 푸시
+          </h2>
+        </div>
+        <div class="slide-content flow-grid cols-3">
+          <div class="step" data-anim="up" style="--i: 2">
+            <span class="num">1</span>
+            <strong>연동</strong>
+            <span>프롬프트 〈주소〉 칸에 GitHub 저장소 주소를 붙여 프로젝트와 연결</span>
+          </div>
+          <div class="step" data-anim="up" style="--i: 3">
+            <span class="num">2</span>
+            <strong>커밋</strong>
+            <span>바뀐 코드를 기록(세이브)으로 저장</span>
+          </div>
+          <div class="step" data-anim="up" style="--i: 4">
+            <span class="num">3</span>
+            <strong>푸시</strong>
+            <span>기록한 코드를 GitHub로 올리기</span>
+          </div>
+        </div>
+        <div class="slide-footer" data-anim="fade" style="--i: 5">
+          <span class="pause-badge">프롬프트의 〈주소〉 칸에 내 저장소 주소만 넣으면 이 순서로 연결돼요</span>
+        </div>
+        <div class="prompt-chips" data-anim="fade" style="--i: 9">
+          <button type="button" class="prompt-chip" data-prompt="step-8">
+            <span class="chip-ico">📋</span>GitHub 연동 프롬프트
+          </button>
+        </div>
+      </section>
+
+      <!-- ═══════════ 36. Git vs GitHub + 연결 ═══════════ -->
+      <section
+        class="slide"
+        style="--accent: var(--mint); --accent-deep: var(--mint-deep); --accent-soft: color-mix(in srgb, var(--mint) 16%, var(--paper));"
+      >
+        <div class="slide-header">
+          <p class="eyebrow" data-anim="down" style="--i: 0">6부 · GitHub</p>
+          <h2 class="slide-title" data-anim="down" style="--i: 1">
+            Git은 내 PC, GitHub는 온라인
+          </h2>
+        </div>
+        <div class="slide-content two-col">
+          <div class="media-text" data-anim="left" style="--i: 2">
+            <p><strong>Git</strong> = 내 컴퓨터에서 기록 관리</p>
+            <p><strong>GitHub</strong> = 그 코드를 온라인에 올리는 서비스</p>
+            <p>포트폴리오 · 공유 · Pages 배포까지</p>
+          </div>
+          <div class="panel accent" data-anim="right" style="--i: 3">
+            <pre>git remote add origin &lt;주소&gt;
+git branch -M main
+git push -u origin main</pre>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══════════ PART 7 챕터 (블루) ═══════════ -->
+      <section
+        class="slide chapter"
+        style="--accent: var(--blue); --accent-deep: var(--blue-deep); --accent-soft: color-mix(in srgb, var(--blue) 16%, var(--paper));"
+      >
+        <div class="slide-header">
+          <div class="hexline" data-anim="pop" style="--i: 0">
+            <i></i><i></i><i></i>
+          </div>
+          <p class="part-no" data-anim="down" style="--i: 1">PART 7</p>
+          <h2 class="slide-title" data-anim="up" style="--i: 2">
+            GitHub Pages 배포
+          </h2>
+        </div>
+      </section>
+
+      <!-- ═══════════ 38. GitHub Pages란? 역할 구분 ═══════════ -->
+      <section
+        class="slide"
+        style="--accent: var(--blue); --accent-deep: var(--blue-deep); --accent-soft: color-mix(in srgb, var(--blue) 16%, var(--paper));"
+      >
+        <div class="slide-header">
+          <p class="eyebrow" data-anim="down" style="--i: 0">7부 · 배포</p>
+          <h2 class="slide-title" data-anim="down" style="--i: 1">
+            화면은 Pages, 데이터는 Supabase
+          </h2>
+        </div>
+        <div class="slide-content compare-grid">
+          <div class="panel accent" data-anim="left" style="--i: 2">
+            <h3>GitHub Pages</h3>
+            <p>사용자가 보는 <strong>웹 화면</strong>을 인터넷에 공개</p>
+          </div>
+          <div class="panel good" data-anim="right" style="--i: 2">
+            <h3>Supabase</h3>
+            <p>데이터 <strong>저장과 조회</strong>를 담당</p>
+          </div>
+        </div>
+        <div class="slide-footer" data-anim="fade" style="--i: 3">
+          <span>둘이 역할을 나눠 맡아 하나의 앱처럼 동작합니다</span>
+        </div>
+      </section>
+
+      <!-- ═══════════ 39. Pages 배포 실습 ═══════════ -->
+      <section
+        class="slide"
+        style="--accent: var(--blue); --accent-deep: var(--blue-deep); --accent-soft: color-mix(in srgb, var(--blue) 16%, var(--paper));"
+      >
+        <div class="slide-header">
+          <p class="eyebrow" data-anim="down" style="--i: 0">7부 · 실습</p>
+          <h2 class="slide-title" data-anim="down" style="--i: 1">
+            클릭 몇 번이면 배포 끝
+          </h2>
+        </div>
+        <div class="slide-content media-split" style="grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.35fr);">
+          <div class="media-text" data-anim="left" style="--i: 2">
+            <pre>① Repository → Settings
+② Pages 메뉴
+③ 배포 소스(Branch) 선택
+④ 배포 URL 확인 후 접속</pre>
+            <p class="mini">접속해 Todo 추가·체크·삭제까지 테스트</p>
+          </div>
+          <figure class="media-frame" data-anim="zoom" style="--i: 3">
+            <img
+              src="이미지/스크린샷 2026-06-26 184302.png"
+              alt="GitHub Pages 배포 설정 화면 — Settings → Pages에서 배포 소스(Branch)와 배포 URL 확인"
+              style="width: auto; height: auto; max-width: 100%; max-height: 82vh; object-fit: contain; object-position: top; align-self: start; background: var(--paper)"
+            />
+            <figcaption class="mini">▲ Settings → Pages 배포 설정</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <!-- ═══════════ 40. 수정 후 다시 배포 ═══════════ -->
+      <section
+        class="slide"
+        style="--accent: var(--blue); --accent-deep: var(--blue-deep); --accent-soft: color-mix(in srgb, var(--blue) 16%, var(--paper));"
+      >
+        <div class="slide-header">
+          <p class="eyebrow" data-anim="down" style="--i: 0">7부 · 재배포</p>
+          <h2 class="slide-title" data-anim="down" style="--i: 1">
+            고치면 push 한 번으로 다시 배포
+          </h2>
+        </div>
+        <div class="slide-content media-full" data-anim="up" style="--i: 2">
+          <pre>git add .
+git commit -m "배포 후 화면 수정"
+git push          # → GitHub Pages가 자동으로 갱신</pre>
+        </div>
+        <div class="slide-footer" data-anim="fade" style="--i: 3">
+          <span>URL을 새로고침해 수정 내용이 반영됐는지 확인</span>
+        </div>
+      </section>
+
+      <!-- ═══════════ 41. 전체 흐름 복습 (timeline) ═══════════ -->
+      <section class="slide">
+        <div class="slide-header">
+          <p class="eyebrow" data-anim="down" style="--i: 0">마무리 · 복습</p>
+          <h2 class="slide-title" data-anim="down" style="--i: 1">
+            오늘 우리가 거친 길
+          </h2>
+        </div>
+        <ul class="slide-content timeline">
+          <li data-anim="up" style="--i: 2">
+            <strong>1</strong><span>데이터베이스 이해 → Supabase 프로젝트 생성</span>
+          </li>
+          <li data-anim="up" style="--i: 3">
+            <strong>2</strong><span>테이블 설계 → 카테고리 Todo 앱 구현</span>
+          </li>
+          <li data-anim="up" style="--i: 4">
+            <strong>3</strong><span>날짜별 관리 · JOIN과 집계로 통계까지</span>
+          </li>
+          <li data-anim="up" style="--i: 5">
+            <strong>4</strong><span>Git 기록 → GitHub 업로드 → Pages 배포</span>
+          </li>
+        </ul>
+      </section>
+
+      <!-- ═══════════ 42. 최종 결과물 ═══════════ -->
+      <section class="slide">
+        <div class="slide-header">
+          <p class="eyebrow" data-anim="down" style="--i: 0">최종 결과물</p>
+          <h2 class="slide-title" data-anim="down" style="--i: 1">
+            내가 만든 앱이 <span class="hl">인터넷에 살아있다</span>
+          </h2>
+          <p class="slide-subtitle" data-anim="up" style="--i: 2">
+            Supabase DB가 연결된 카테고리 Todo 앱 — 링크 하나로 누구에게나 공유.
+          </p>
+        </div>
+        <div class="slide-content media-full">
+          <figure class="media-frame" data-anim="zoom" style="--i: 3">
+            <img
+              src="이미지/프로젝트_화면.gif"
+              alt="배포된 카테고리 Todo 앱 화면 — 스크롤하며 라이트/다크 모드로 전환되는 모습"
+              style="width: auto; height: auto; max-width: 100%; max-height: 52vh; object-fit: contain; background: var(--paper)"
+            />
+            <figcaption class="mini">▲ 배포된 카테고리 Todo 앱 화면</figcaption>
+          </figure>
+        </div>
+        <div class="prompt-chips" data-anim="fade" style="--i: 9">
+          <button type="button" class="prompt-chip" data-prompt="step-9">
+            <span class="chip-ico">📋</span>디자인 개편 프롬프트
+          </button>
+          <button type="button" class="prompt-chip" data-prompt="step-10">
+            <span class="chip-ico">📋</span>화면 GIF 프롬프트
+          </button>
+        </div>
+      </section>
+
+      <!-- ═══════════ 43. 마무리 Q&A ═══════════ -->
+      <section class="slide qna">
+        <div class="slide-header">
+          <h2 class="slide-title" data-anim="zoom" style="--i: 0">Q&amp;A 시간</h2>
+        </div>
+      </section>
+    </main>
+
+    <nav class="controls" aria-label="슬라이드 이동">
+      <button id="homeBtn" type="button" aria-label="첫 슬라이드로 이동">⌂</button>
+      <button id="prevBtn" type="button" aria-label="이전 슬라이드">‹</button>
+      <span id="counter">1 / 1</span>
+      <button id="nextBtn" type="button" aria-label="다음 슬라이드">›</button>
+      <button id="printBtn" type="button" aria-label="인쇄">⎙</button>
+      <a href="prompts.html" target="_blank" rel="noopener">프롬프트</a>
+    </nav>
+
+    <!-- 실습 프롬프트 단일 소스 (칩 팝오버 · prompts.html 공용) -->
+    <script src="prompts.js"></script>
+
+    <!-- 키보드: ← → 이동 · Home/End 처음·끝 · G 안전구역 · Ctrl+P 인쇄 -->
+    <script>
+      const slides = Array.from(document.querySelectorAll('main.deck > .slide'))
+      const progressBar = document.getElementById('progressBar')
+      const counter = document.getElementById('counter')
+      const homeBtn = document.getElementById('homeBtn')
+      const prevBtn = document.getElementById('prevBtn')
+      const nextBtn = document.getElementById('nextBtn')
+      const printBtn = document.getElementById('printBtn')
+
+      const GUIDE_HTML = `
+        <div class="safe-guides" aria-hidden="true">
+          <div class="box guide-action"><b>액션 세이프 90%</b></div>
+          <div class="box guide-title"><b>타이틀 세이프 80% — 핵심은 이 안</b></div>
+          <div class="box guide-cards"><b>카드 ⓘ</b></div>
+          <div class="box guide-sub"><b>자막 구역 — 핵심 글자 금지</b></div>
+          <div class="box guide-controls"><b>플레이어 컨트롤·진행바</b></div>
+        </div>`
+      slides.forEach((s) => s.insertAdjacentHTML('beforeend', GUIDE_HTML))
+
+      function readInitialIndex() {
+        const match = window.location.hash.match(/slide-(\d+)/)
+        if (!match) return 0
+        return Math.max(0, Math.min(slides.length - 1, Number(match[1]) - 1))
+      }
+
+      let current = readInitialIndex()
+
+      function showSlide(index) {
+        current = Math.max(0, Math.min(slides.length - 1, index))
+        slides.forEach((slide, i) => {
+          slide.classList.toggle('active', i === current)
+        })
+        counter.textContent = `${current + 1} / ${slides.length}`
+        progressBar.style.transform = `scaleX(${(current + 1) / slides.length})`
+        window.history.replaceState(null, '', `#slide-${current + 1}`)
+      }
+
+      function moveBy(delta) {
+        showSlide(current + delta)
+      }
+
+      homeBtn.addEventListener('click', () => showSlide(0))
+      prevBtn.addEventListener('click', () => moveBy(-1))
+      nextBtn.addEventListener('click', () => moveBy(1))
+      printBtn.addEventListener('click', () => window.print())
+
+      function toggleGuides() {
+        document.body.classList.toggle('guides-on')
+      }
+
+      window.addEventListener('keydown', (event) => {
+        if (event.defaultPrevented) return
+        if (['ArrowRight', 'PageDown', ' '].includes(event.key)) {
+          event.preventDefault()
+          moveBy(1)
+        }
+        if (['ArrowLeft', 'PageUp'].includes(event.key)) {
+          event.preventDefault()
+          moveBy(-1)
+        }
+        if (event.key === 'Home') {
+          event.preventDefault()
+          showSlide(0)
+        }
+        if (event.key === 'End') {
+          event.preventDefault()
+          showSlide(slides.length - 1)
+        }
+        if (event.key === 'g' || event.key === 'G') {
+          event.preventDefault()
+          toggleGuides()
+        }
+      })
+
+      window.addEventListener('hashchange', () => showSlide(readInitialIndex()))
+      showSlide(current)
+
+      /* ── 이미지 확대 뷰어(라이트박스) ── */
+      const lightbox = document.createElement('div')
+      lightbox.className = 'lightbox'
+      lightbox.innerHTML =
+        '<button type="button" class="lightbox-close" aria-label="닫기">×</button><img alt="" />'
+      document.body.appendChild(lightbox)
+      const lightboxImg = lightbox.querySelector('img')
+
+      function openLightbox(src, alt) {
+        lightboxImg.src = src
+        lightboxImg.alt = alt || ''
+        lightbox.classList.add('open')
+      }
+      function closeLightbox() {
+        lightbox.classList.remove('open')
+        lightboxImg.src = ''
+      }
+
+      document
+        .querySelectorAll('.slide-content img, figure.media-frame img')
+        .forEach((img) => {
+          img.addEventListener('click', (event) => {
+            event.stopPropagation()
+            openLightbox(img.currentSrc || img.src, img.alt)
+          })
+        })
+
+      lightbox.addEventListener('click', closeLightbox)
+      window.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && lightbox.classList.contains('open')) {
+          event.preventDefault()
+          closeLightbox()
+        }
+      })
+
+      /* ── 실습 프롬프트 칩: hover 미리보기 · click 복사 ── */
+      ;(function setupPromptChips() {
+        const store = window.LecturePrompts
+        const chips = Array.from(document.querySelectorAll('.prompt-chip'))
+        if (!store || !chips.length) return
+
+        // 슬라이드 위에 띄울 공용 팝오버 (body에 부착해 overflow 클리핑 회피)
+        const pop = document.createElement('div')
+        pop.className = 'prompt-popover'
+        pop.innerHTML =
+          '<div class="pop-head">' +
+          '<span><span class="pop-step"></span> <span class="pop-title"></span></span>' +
+          '<span class="pop-copyhint">클릭하면 복사 📋</span>' +
+          '</div><pre></pre><p class="pop-note"></p>'
+        document.body.appendChild(pop)
+        const popStep = pop.querySelector('.pop-step')
+        const popTitle = pop.querySelector('.pop-title')
+        const popPre = pop.querySelector('pre')
+        const popNote = pop.querySelector('.pop-note')
+
+        // 복사 완료 토스트
+        const toast = document.createElement('div')
+        toast.className = 'prompt-toast'
+        document.body.appendChild(toast)
+        let toastTimer = null
+        function showToast(msg) {
+          toast.textContent = msg
+          toast.classList.add('show')
+          window.clearTimeout(toastTimer)
+          toastTimer = window.setTimeout(
+            () => toast.classList.remove('show'),
+            1100
+          )
+        }
+
+        let hideTimer = null
+        let activeChip = null
+
+        function fillPopover(prompt) {
+          popStep.textContent = prompt.step || ''
+          popTitle.textContent = prompt.title || ''
+          popPre.textContent = store.buildText(prompt, {})
+          if (prompt.note) {
+            popNote.textContent = prompt.note
+            popNote.style.display = ''
+          } else {
+            popNote.style.display = 'none'
+          }
+        }
+
+        function placePopover(chip) {
+          // 먼저 보이게 한 뒤 크기를 재서 칩 기준으로 위/아래 배치
+          pop.classList.add('open')
+          const cr = chip.getBoundingClientRect()
+          const pr = pop.getBoundingClientRect()
+          const margin = 10
+          let left = cr.right - pr.width
+          left = Math.max(margin, Math.min(left, window.innerWidth - pr.width - margin))
+          let top = cr.bottom + margin
+          if (top + pr.height > window.innerHeight - margin) {
+            top = cr.top - pr.height - margin // 아래 공간 부족 → 위로
+          }
+          if (top < margin) top = margin
+          pop.style.left = left + 'px'
+          pop.style.top = top + 'px'
+        }
+
+        function openFor(chip) {
+          const prompt = store.byId(chip.dataset.prompt)
+          if (!prompt) return
+          window.clearTimeout(hideTimer)
+          activeChip = chip
+          // 칩의 액센트 색을 팝오버 상단 테두리에 반영
+          const accent = getComputedStyle(chip.closest('.slide') || chip)
+            .getPropertyValue('--accent')
+            .trim()
+          pop.style.borderTopColor = accent || '#5b9dff'
+          fillPopover(prompt)
+          placePopover(chip)
+        }
+
+        function scheduleHide() {
+          window.clearTimeout(hideTimer)
+          hideTimer = window.setTimeout(() => {
+            pop.classList.remove('open')
+            activeChip = null
+          }, 180)
+        }
+
+        chips.forEach((chip) => {
+          chip.addEventListener('mouseenter', () => openFor(chip))
+          chip.addEventListener('mouseleave', scheduleHide)
+          chip.addEventListener('focus', () => openFor(chip))
+          chip.addEventListener('blur', scheduleHide)
+          chip.addEventListener('click', async () => {
+            const prompt = store.byId(chip.dataset.prompt)
+            if (!prompt) return
+            const text = store.buildText(prompt, {})
+            try {
+              await navigator.clipboard.writeText(text)
+              showToast('복사됨 ✓ ' + (prompt.step || ''))
+            } catch (e) {
+              // clipboard 권한 실패 시 폴백
+              const ta = document.createElement('textarea')
+              ta.value = text
+              document.body.appendChild(ta)
+              ta.select()
+              document.execCommand('copy')
+              document.body.removeChild(ta)
+              showToast('복사됨 ✓ ' + (prompt.step || ''))
+            }
+          })
+        })
+
+        // 팝오버 위로 마우스를 옮기면 유지(긴 프롬프트 스크롤용)
+        pop.addEventListener('mouseenter', () => window.clearTimeout(hideTimer))
+        pop.addEventListener('mouseleave', scheduleHide)
+
+        // 슬라이드 이동 시 팝오버 닫기
+        window.addEventListener('keydown', () => {
+          if (pop.classList.contains('open')) scheduleHide()
+        })
+      })()
+    </script>
+  </body>
+</html>

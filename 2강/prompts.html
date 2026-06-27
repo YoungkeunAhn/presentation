@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>2차강의 · 실습 프롬프트 모음</title>
+    <style>
+      :root {
+        --bg: #12161b;
+        --paper: #1e252c;
+        --surface: #28313a;
+        --line: #3b454f;
+        --ink: #f3f5f7;
+        --ink-soft: #cdd4db;
+        --muted: #95a0ab;
+        --honey: #ffc93c;
+        --honey-deep: #f2a900;
+        --blue: #5b9dff;
+        --mint: #2dd4bf;
+        --bad: #f0795f;
+        --shadow: 0 18px 46px rgba(0, 0, 0, 0.42);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        min-height: 100%;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: 'Pretendard', 'Noto Sans KR', 'Malgun Gothic', Arial,
+          sans-serif;
+      }
+
+      body {
+        padding: 42px 22px 64px;
+      }
+
+      main {
+        width: min(1080px, 100%);
+        margin: 0 auto;
+        display: grid;
+        gap: 24px;
+      }
+
+      header {
+        display: grid;
+        gap: 16px;
+        padding: 34px 36px;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: linear-gradient(
+            115deg,
+            rgba(91, 157, 255, 0.16),
+            transparent 46%
+          ),
+          linear-gradient(180deg, rgba(255, 201, 60, 0.12), transparent 64%),
+          var(--paper);
+        box-shadow: var(--shadow);
+      }
+
+      h1,
+      h2,
+      p {
+        margin: 0;
+      }
+
+      h1 {
+        font-size: clamp(34px, 5vw, 52px);
+        line-height: 1.12;
+      }
+
+      h2 {
+        font-size: clamp(22px, 3vw, 30px);
+        line-height: 1.24;
+      }
+
+      p {
+        color: var(--ink-soft);
+        font-size: 18px;
+        line-height: 1.58;
+      }
+
+      .eyebrow {
+        justify-self: start;
+        color: var(--blue);
+        font-size: 14px;
+        font-weight: 850;
+        line-height: 1;
+        background: color-mix(in srgb, var(--blue) 18%, var(--paper));
+        border: 1px solid color-mix(in srgb, var(--blue) 38%, transparent);
+        border-radius: 999px;
+        padding: 8px 13px;
+      }
+
+      .prompt-card {
+        display: grid;
+        gap: 18px;
+        border: 1px solid var(--line);
+        border-top: 6px solid var(--blue);
+        border-radius: 12px;
+        padding: 26px;
+        background: var(--paper);
+        box-shadow: 0 8px 22px rgba(0, 0, 0, 0.28);
+      }
+
+      .prompt-card:nth-of-type(3n) {
+        border-top-color: var(--mint);
+      }
+      .prompt-card:nth-of-type(3n + 1) {
+        border-top-color: var(--honey);
+      }
+      .prompt-card:nth-of-type(3n + 2) {
+        border-top-color: var(--blue);
+      }
+
+      /* 강조 카드 */
+      .prompt-card.spotlight {
+        border-top-color: var(--honey);
+        background: linear-gradient(
+          180deg,
+          rgba(255, 201, 60, 0.12),
+          var(--paper) 46%
+        );
+      }
+
+      .card-head {
+        display: flex;
+        align-items: start;
+        justify-content: space-between;
+        gap: 18px;
+      }
+
+      .num-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--honey);
+        font-size: 14px;
+        font-weight: 850;
+        line-height: 1;
+        margin-bottom: 10px;
+      }
+
+      .slide-tag {
+        display: inline-block;
+        margin-top: 4px;
+        color: #15191e;
+        background: var(--honey);
+        border-radius: 999px;
+        padding: 5px 11px;
+        font-size: 13px;
+        font-weight: 900;
+      }
+
+      button {
+        flex: 0 0 auto;
+        min-height: 40px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 0 14px;
+        color: var(--ink);
+        background: var(--surface);
+        font-size: 14px;
+        font-weight: 850;
+        cursor: pointer;
+      }
+
+      button:hover {
+        border-color: var(--blue);
+        color: var(--blue);
+      }
+
+      .conn-fields {
+        display: grid;
+        gap: 12px;
+        padding: 16px 18px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: var(--surface);
+      }
+
+      .conn-fields label {
+        display: grid;
+        gap: 6px;
+      }
+
+      .conn-fields label span {
+        font-size: 13px;
+        font-weight: 850;
+        color: var(--ink-soft);
+      }
+
+      .conn-fields input {
+        width: 100%;
+        min-height: 42px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 0 12px;
+        color: var(--ink);
+        background: #11151a;
+        font-family: 'D2Coding', Consolas, 'Courier New', monospace;
+        font-size: 15px;
+      }
+
+      .conn-fields input:focus {
+        outline: none;
+        border-color: var(--blue);
+      }
+
+      .conn-hint {
+        margin: 0;
+        font-size: 13px;
+        color: var(--muted);
+        line-height: 1.5;
+      }
+
+      pre {
+        margin: 0;
+        white-space: pre-wrap;
+        word-break: keep-all;
+        overflow-wrap: anywhere;
+        background: #11151a;
+        color: #eef3f6;
+        border-left: 6px solid var(--blue);
+        border-radius: 10px;
+        padding: 20px 22px;
+        font-family: 'D2Coding', Consolas, 'Courier New', monospace;
+        font-size: 16px;
+        line-height: 1.6;
+      }
+
+      a {
+        color: var(--blue);
+        font-weight: 850;
+        text-decoration: none;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+
+      @media (max-width: 720px) {
+        body {
+          padding: 22px 14px 42px;
+        }
+        header,
+        .prompt-card {
+          padding: 22px;
+        }
+        .card-head {
+          display: grid;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header>
+        <p class="eyebrow">AI 2차강의 실습</p>
+        <h1>실습 프롬프트 모음</h1>
+        <p>
+          발표 슬라이드에는 요약만 남기고, 수강생이 그대로 복사해서 쓸 긴
+          프롬프트를 이곳에 모았습니다. <strong>[대괄호]</strong> 부분만 자신의
+          내용으로 바꿔 사용하세요. 카테고리 Todo 앱을 만들고 GitHub Pages로
+          배포하는 흐름 순서입니다.
+        </p>
+        <p><a href="index.html">← 발표 슬라이드로 돌아가기</a></p>
+      </header>
+
+      <!-- 프롬프트 카드는 prompts.js(단일 소스)에서 렌더링됩니다 -->
+      <div id="promptList" style="display: grid; gap: 24px"></div>
+    </main>
+
+    <!-- 실습 프롬프트 단일 소스 -->
+    <script src="prompts.js"></script>
+    <script>
+      ;(function renderPromptCards() {
+        const store = window.LecturePrompts
+        const root = document.getElementById('promptList')
+        if (!store || !root) return
+
+        function esc(s) {
+          return String(s)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+        }
+
+        store.list.forEach((prompt) => {
+          const card = document.createElement('section')
+          card.className = 'prompt-card' + (prompt.spotlight ? ' spotlight' : '')
+
+          const slideTag = prompt.slide
+            ? '<span class="slide-tag">📌 ' +
+              prompt.slide +
+              '번 슬라이드에서 사용</span>'
+            : ''
+
+          let connFields = ''
+          if (prompt.vars && prompt.vars.length) {
+            const inputs = prompt.vars
+              .map(
+                (v) =>
+                  '<label><span>' +
+                  esc(v.label || v.name) +
+                  '</span>' +
+                  '<input type="text" data-var="' +
+                  esc(v.name) +
+                  '" data-label="' +
+                  esc(v.label || v.name) +
+                  '" placeholder="' +
+                  esc(v.placeholder || '') +
+                  '" /></label>'
+              )
+              .join('')
+            const hint = prompt.note
+              ? '<p class="conn-hint">' + esc(prompt.note) + '</p>'
+              : ''
+            connFields = '<div class="conn-fields">' + inputs + hint + '</div>'
+          }
+
+          card.innerHTML =
+            '<div class="card-head"><div>' +
+            '<p class="num-badge">' +
+            esc(prompt.step) +
+            '</p>' +
+            '<h2>' +
+            esc(prompt.title) +
+            '</h2>' +
+            slideTag +
+            '</div><button type="button" data-copy>복사</button></div>' +
+            connFields +
+            '<pre></pre>'
+
+          // 본문은 textContent로 넣어 원문 그대로 보존
+          card.querySelector('pre').textContent = prompt.body
+          card._prompt = prompt
+          root.appendChild(card)
+        })
+
+        // 복사: 입력칸 값을 치환해 클립보드로
+        root.querySelectorAll('[data-copy]').forEach((button) => {
+          button.addEventListener('click', async () => {
+            const card = button.closest('.prompt-card')
+            const prompt = card._prompt
+            const values = {}
+            card.querySelectorAll('[data-var]').forEach((input) => {
+              values[input.dataset.var] = input.value
+            })
+            const text = store.buildText(prompt, values)
+            try {
+              await navigator.clipboard.writeText(text)
+            } catch (e) {
+              const ta = document.createElement('textarea')
+              ta.value = text
+              document.body.appendChild(ta)
+              ta.select()
+              document.execCommand('copy')
+              document.body.removeChild(ta)
+            }
+            const original = button.textContent
+            button.textContent = '복사됨'
+            window.setTimeout(() => {
+              button.textContent = original
+            }, 1200)
+          })
+        })
+      })()
+    </script>
+  </body>
+</html>
